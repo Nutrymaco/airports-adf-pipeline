@@ -7,7 +7,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "set actual day",
+						"activity": "set actual",
 						"dependencyConditions": [
 							"Succeeded"
 						]
