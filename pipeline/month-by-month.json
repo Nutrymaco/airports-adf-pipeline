@@ -474,7 +474,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"scriptPath": "scripts/join bookings and flights/Unnamed",
+					"scriptPath": "scripts/join_bookings_and_flights.usql",
 					"scriptLinkedService": {
 						"referenceName": "AzureDataLakeStore1",
 						"type": "LinkedServiceReference"
@@ -562,7 +562,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"scriptPath": "scripts/u-sql1/Unnamed",
+					"scriptPath": "scripts/agg_bookings_report.usql",
 					"scriptLinkedService": {
 						"referenceName": "AzureDataLakeStore1",
 						"type": "LinkedServiceReference"

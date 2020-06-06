@@ -374,7 +374,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"scriptPath": "scripts/big join/Unnamed",
+					"scriptPath": "scripts/join.usql",
 					"scriptLinkedService": {
 						"referenceName": "AzureDataLakeStore1",
 						"type": "LinkedServiceReference"
@@ -419,7 +419,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"scriptPath": "scripts/agg report about amounts/Unnamed",
+					"scriptPath": "scripts/amount_agg.usql",
 					"scriptLinkedService": {
 						"referenceName": "AzureDataLakeStore1",
 						"type": "LinkedServiceReference"
@@ -464,7 +464,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"scriptPath": "scripts/join flights and airports/Unnamed",
+					"scriptPath": "scripts/join_flight_and_airports.usql",
 					"scriptLinkedService": {
 						"referenceName": "AzureDataLakeStore1",
 						"type": "LinkedServiceReference"
@@ -509,7 +509,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"scriptPath": "scripts/agg report about latency/Unnamed",
+					"scriptPath": "scripts/flights_latency_report.usql",
 					"scriptLinkedService": {
 						"referenceName": "AzureDataLakeStore1",
 						"type": "LinkedServiceReference"
