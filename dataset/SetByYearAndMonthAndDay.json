@@ -1,0 +1,51 @@
+{
+	"name": "SetByYearAndMonthAndDay",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStore1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"stage": {
+				"type": "string",
+				"defaultValue": "none"
+			},
+			"day": {
+				"type": "string",
+				"defaultValue": "01"
+			},
+			"month": {
+				"type": "string",
+				"defaultValue": "01"
+			},
+			"year": {
+				"type": "string",
+				"defaultValue": "2020"
+			},
+			"fileName": {
+				"type": "string",
+				"defaultValue": "fileName"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureDataLakeStoreLocation",
+				"fileName": {
+					"value": "@concat(dataset().fileName, '.csv')",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@concat(concat(concat(dataset().stage, '/'),\nconcat(dataset().year, '/')),\nconcat(\nconcat(dataset().month, '/'),\nconcat(dataset().day, '/')))",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

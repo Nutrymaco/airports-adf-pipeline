@@ -1,0 +1,17 @@
+{
+	"name": "TicketsFlightsTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzurePostgreSql1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "bookings",
+			"table": "ticket_flights"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

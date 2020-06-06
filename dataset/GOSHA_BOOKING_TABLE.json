@@ -1,0 +1,48 @@
+{
+	"name": "GOSHA_BOOKING_TABLE",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GoshaBD",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "book_number",
+				"type": "text"
+			},
+			{
+				"name": "people_amount",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "flight_count",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "book_and_flight_diff",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "average_ticket_price",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "book_sum",
+				"type": "money",
+				"precision": 19,
+				"scale": 4
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Booking"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

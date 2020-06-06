@@ -1,0 +1,14 @@
+{
+	"name": "AzureDataLakeStore1",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureDataLakeStore",
+		"typeProperties": {
+			"dataLakeStoreUri": "https://sendls.azuredatalakestore.net/webhdfs/v1",
+			"tenant": "8957652c-8b32-4246-9daa-700cb6f31fc6",
+			"subscriptionId": "a66ba509-6b33-4f11-b3f8-8547f92c3805",
+			"resourceGroupName": "sen-mirea-rg"
+		}
+	}
+}
