@@ -772,7 +772,8 @@
 				"defaultValue": "2020"
 			},
 			"actual": {
-				"type": "Boolean"
+				"type": "Boolean",
+				"defaultValue": true
 			}
 		},
 		"annotations": []
