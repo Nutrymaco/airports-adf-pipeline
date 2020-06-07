@@ -134,6 +134,131 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/2-upd-in-1-day')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "most popular directions in 24 hours updated 2 times in 24 hours",
+				"activities": [
+					{
+						"name": "set variables",
+						"type": "IfCondition",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('set_actual')",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Set year",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "year",
+										"value": {
+											"value": "@formatDateTime(utcnow(), 'yyyy')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set month",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set year",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "month",
+										"value": {
+											"value": "@formatDateTime(utcnow(), 'MM')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set day",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set month",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "day",
+										"value": {
+											"value": "@formatDateTime(utcnow(), 'dd')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Set part of day",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Set day",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "part_of_day",
+										"value": {
+											"value": "@string(int(div(int(formatDateTime(utcNow(), 'hh')),\ndiv(24, int(variables('count_of_parts')))\n)))",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"variables": {
+					"year": {
+						"type": "String",
+						"defaultValue": "2020"
+					},
+					"month": {
+						"type": "String",
+						"defaultValue": "01"
+					},
+					"day": {
+						"type": "String",
+						"defaultValue": "01"
+					},
+					"part_of_day": {
+						"type": "String",
+						"defaultValue": "1"
+					},
+					"count_of_parts": {
+						"type": "String",
+						"defaultValue": "2"
+					},
+					"set_actual": {
+						"type": "Boolean",
+						"defaultValue": true
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AircraftsTable')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2296,7 +2421,8 @@
 						"defaultValue": "2020"
 					},
 					"actual": {
-						"type": "Boolean"
+						"type": "Boolean",
+						"defaultValue": true
 					}
 				},
 				"annotations": []
