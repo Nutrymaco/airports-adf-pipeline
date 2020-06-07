@@ -113,7 +113,7 @@
 					"source": {
 						"type": "AzurePostgreSqlSource",
 						"query": {
-							"value": "select\n    f.flight_id, f.departure_airport, f.arrival_airport, scheduled_departure, scheduled_arrival\nfrom bookings.flights f\n    join bookings.ticket_flights tf on f.flight_id = tf.flight_id\n    join bookings.tickets t on tf.ticket_no = t.ticket_no\n    join bookings.bookings b on t.book_ref = b.book_ref\nwhere\n    extract(year from b.book_date) = @{variables('year')}\n        and\n    extract(month from b.book_date) = @{variables('month')}\n        and\n    extract(day from b.book_date) = @{variables('day')}\n        and\n    extract(hour from b.book_date) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\t    and\n    extract(hour from b.book_date) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}",
+							"value": "select\n    f.flight_id, scheduled_departure, scheduled_arrival, f.departure_airport, f.arrival_airport\nfrom bookings.flights f\n    join bookings.ticket_flights tf on f.flight_id = tf.flight_id\n    join bookings.tickets t on tf.ticket_no = t.ticket_no\n    join bookings.bookings b on t.book_ref = b.book_ref\nwhere\n    extract(year from b.book_date) = @{variables('year')}\n        and\n    extract(month from b.book_date) = @{variables('month')}\n        and\n    extract(day from b.book_date) = @{variables('day')}\n        and\n    extract(hour from b.book_date) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\t    and\n    extract(hour from b.book_date) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}",
 							"type": "Expression"
 						}
 					},
@@ -155,7 +155,7 @@
 							},
 							{
 								"source": {
-									"name": "actual_departure",
+									"name": "scheduled_arrival",
 									"type": "DateTime"
 								},
 								"sink": {
@@ -242,7 +242,7 @@
 					"source": {
 						"type": "AzurePostgreSqlSource",
 						"query": {
-							"value": "select \n      tf.ticket_no, tf.flight_id, tf.amount \nfrom bookings.ticket_flights tf\n    join bookings,tickets t on tf.ticket_no = t.ticket_no\n    join bookings.bookings b on t.book_ref = b.book_ref\nwhere\n    extract(year from b.book_date) = @{variables('year')}\n        and\n    extract(month from b.book_date) = @{variables('month')}\n        and\n    extract(day from b.book_date) = @{variables('day')}\n        and\n    extract(hour from b.book_date) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\t    and\n    extract(hour from b.book_date) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}\n\n",
+							"value": "select \n      tf.ticket_no, tf.flight_id, tf.amount \nfrom bookings.ticket_flights tf\n    join bookings.tickets t on tf.ticket_no = t.ticket_no\n    join bookings.bookings b on t.book_ref = b.book_ref\nwhere\n    extract(year from b.book_date) = @{variables('year')}\n        and\n    extract(month from b.book_date) = @{variables('month')}\n        and\n    extract(day from b.book_date) = @{variables('day')}\n        and\n    extract(hour from b.book_date) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\t    and\n    extract(hour from b.book_date) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}\n\n",
 							"type": "Expression"
 						}
 					},
