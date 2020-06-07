@@ -113,7 +113,7 @@
 					"source": {
 						"type": "AzurePostgreSqlSource",
 						"query": {
-							"value": "select * from bookings.flights\nwhere EXTRACT(year from scheduled_departure) = @{variables('year')}\n        and\n      EXTRACT(month from scheduled_departure) = @{variables('month')}\n        and\n      EXTRACT(day from scheduled_departure) = @{variables('day')}\n\tand\n      EXTRACT(hour from scheduled_departure) < @{int(variables('part_of_day'))} * 24/@{int('count_of_parts')}\n\tand\n      EXTRACT(hour from scheduled_departure) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int('count_of_parts')}",
+							"value": "select * from bookings.flights\nwhere EXTRACT(year from scheduled_departure) = @{variables('year')}\n        and\n      EXTRACT(month from scheduled_departure) = @{variables('month')}\n        and\n      EXTRACT(day from scheduled_departure) = @{variables('day')}\n\tand\n      EXTRACT(hour from scheduled_departure) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\tand\n      EXTRACT(hour from scheduled_departure) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}",
 							"type": "Expression"
 						}
 					},
@@ -210,7 +210,7 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "flights"
+							"fileName": "flights_by_part_of_day"
 						}
 					}
 				]
@@ -238,7 +238,7 @@
 					"source": {
 						"type": "AzurePostgreSqlSource",
 						"query": {
-							"value": "select t.ticket_no, t.flight_id, t.amount from bookings.ticket_flights t\njoin bookings.flights f on t.flight_id = f.flight_id\nwhere EXTRACT(year from scheduled_departure) = @{variables('year')}\n        and\n      EXTRACT(month from scheduled_departure) = @{variables('month')}\n       and\n      EXTRACT(day from scheduled_departure) = @{variables('day')}\n\tand\n      EXTRACT(hour from scheduled_departure) < @{int(variables('part_of_day'))} * 24/@{int('count_of_parts')}\n\tand\n      EXTRACT(hour from scheduled_departure) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int('count_of_parts')}\n",
+							"value": "select t.ticket_no, t.flight_id, t.amount from bookings.ticket_flights t\njoin bookings.flights f on t.flight_id = f.flight_id\nwhere EXTRACT(year from scheduled_departure) = @{variables('year')}\n        and\n      EXTRACT(month from scheduled_departure) = @{variables('month')}\n       and\n      EXTRACT(day from scheduled_departure) = @{variables('day')}\n\tand\n      EXTRACT(hour from scheduled_departure) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\tand\n      EXTRACT(hour from scheduled_departure) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}\n",
 							"type": "Expression"
 						}
 					},
@@ -315,7 +315,7 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "ticket_flights"
+							"fileName": "ticket_flights_by_part_of_day"
 						}
 					}
 				]
@@ -437,10 +437,338 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "airports"
+							"fileName": "airports_by_part_of_day"
 						}
 					}
 				]
+			},
+			{
+				"name": "CREATE JOIN BY PART OF DAY",
+				"type": "DataLakeAnalyticsU-SQL",
+				"dependsOn": [
+					{
+						"activity": "COPY CURRENT PROCESS TO RECYCLE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"scriptPath": "scripts/join_2_in_1_pipeline.usql",
+					"scriptLinkedService": {
+						"referenceName": "AzureDataLakeStore1",
+						"type": "LinkedServiceReference"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeAnalytics1",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "Wait1",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "copy flights",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "copy ticket_flights",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "copy airports",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
+			},
+			{
+				"name": "COPY CURRENT PROCESS TO RECYCLE",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Wait1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "SetByYearAndMonthAndDay",
+						"type": "DatasetReference",
+						"parameters": {
+							"stage": "process",
+							"day": {
+								"value": "@variables('day')",
+								"type": "Expression"
+							},
+							"month": {
+								"value": "@variables('month')",
+								"type": "Expression"
+							},
+							"year": {
+								"value": "@variables('year')",
+								"type": "Expression"
+							},
+							"fileName": "join_flights_tickets_airports_by_day"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SetByYearAndMonthAndDay",
+						"type": "DatasetReference",
+						"parameters": {
+							"stage": "process/recycle",
+							"day": {
+								"value": "@variables('day')",
+								"type": "Expression"
+							},
+							"month": {
+								"value": "@variables('month')",
+								"type": "Expression"
+							},
+							"year": {
+								"value": "@variables('year')",
+								"type": "Expression"
+							},
+							"fileName": {
+								"value": "@concat('join_flights_tickets_airports_(', \nstring(add(int(variables('part_of_day')), -1)), '/', variables('count_of_parts'), ')')",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "CLEAR CURRENT PROCESS FROM OLD",
+				"type": "DataLakeAnalyticsU-SQL",
+				"dependsOn": [
+					{
+						"activity": "COPY CURRENT PROCESS TO RECYCLE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"scriptPath": "",
+					"scriptLinkedService": {
+						"referenceName": "AzureDataLakeStore1",
+						"type": "LinkedServiceReference"
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeAnalytics1",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "WRITE UPDATE",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "COPY CURRENT PROCESS TO RECYCLE",
+						"dependencyConditions": [
+							"Failed"
+						]
+					},
+					{
+						"activity": "CREATE JOIN BY PART OF DAY",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "CLEAR CURRENT PROCESS FROM OLD",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "SetByYearAndMonthAndDay",
+						"type": "DatasetReference",
+						"parameters": {
+							"stage": "process",
+							"day": {
+								"value": "@variables('day')",
+								"type": "Expression"
+							},
+							"month": {
+								"value": "@variables('month')",
+								"type": "Expression"
+							},
+							"year": {
+								"value": "@variables('year')",
+								"type": "Expression"
+							},
+							"fileName": "join_flights_tickets_airports_by_part_of_day"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SetByYearAndMonthAndDay",
+						"type": "DatasetReference",
+						"parameters": {
+							"stage": "process",
+							"day": {
+								"value": "@variables('day')",
+								"type": "Expression"
+							},
+							"month": {
+								"value": "@variables('month')",
+								"type": "Expression"
+							},
+							"year": {
+								"value": "@variables('year')",
+								"type": "Expression"
+							},
+							"fileName": "join_flights_tickets_airports_by_day"
+						}
+					}
+				]
+			},
+			{
+				"name": "COPY CURRENT REPORT TO RECYCLE",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "WRITE UPDATE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"enableStaging": false
+				}
+			},
+			{
+				"name": "CREATE NEW REPORT",
+				"type": "DataLakeAnalyticsU-SQL",
+				"dependsOn": [
+					{
+						"activity": "COPY CURRENT REPORT TO RECYCLE",
+						"dependencyConditions": [
+							"Succeeded",
+							"Failed"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"scriptPath": ""
+				}
 			}
 		],
 		"variables": {
