@@ -89,6 +89,358 @@
 						}
 					]
 				}
+			},
+			{
+				"name": "copy flights",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "set variables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": {
+							"value": "select * from bookings.flights\nwhere EXTRACT(year from scheduled_departure) = @{variables('year')}\n        and\n      EXTRACT(month from scheduled_departure) = @{variables('month')}\n        and\n      EXTRACT(day from scheduled_departure) = @{variables('day')}\n\tand\n      EXTRACT(hour from scheduled_departure) < @{int(variables('part_of_day'))} * 24/@{int('count_of_parts')}\n\tand\n      EXTRACT(hour from scheduled_departure) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int('count_of_parts')}",
+							"type": "Expression"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"dataIntegrationUnits": 2,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "flight_id",
+									"type": "Int32"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 1
+								}
+							},
+							{
+								"source": {
+									"name": "scheduled_departure",
+									"type": "DateTime"
+								},
+								"sink": {
+									"type": "DateTime",
+									"ordinal": 2
+								}
+							},
+							{
+								"source": {
+									"name": "actual_departure",
+									"type": "DateTime"
+								},
+								"sink": {
+									"type": "DateTime",
+									"ordinal": 3
+								}
+							},
+							{
+								"source": {
+									"name": "departure_airport",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 4
+								}
+							},
+							{
+								"source": {
+									"name": "arrival_airport",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 5
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "FlightsTable",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SetByYearAndMonthAndDay",
+						"type": "DatasetReference",
+						"parameters": {
+							"stage": "raw",
+							"day": {
+								"value": "@variables('day')",
+								"type": "Expression"
+							},
+							"month": {
+								"value": "@variables('month')",
+								"type": "Expression"
+							},
+							"year": {
+								"value": "@variables('year')",
+								"type": "Expression"
+							},
+							"fileName": "flights"
+						}
+					}
+				]
+			},
+			{
+				"name": "copy ticket_flights",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "set variables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": {
+							"value": "select t.ticket_no, t.flight_id, t.amount from bookings.ticket_flights t\njoin bookings.flights f on t.flight_id = f.flight_id\nwhere EXTRACT(year from scheduled_departure) = @{variables('year')}\n        and\n      EXTRACT(month from scheduled_departure) = @{variables('month')}\n       and\n      EXTRACT(day from scheduled_departure) = @{variables('day')}\n\tand\n      EXTRACT(hour from scheduled_departure) < @{int(variables('part_of_day'))} * 24/@{int('count_of_parts')}\n\tand\n      EXTRACT(hour from scheduled_departure) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int('count_of_parts')}\n",
+							"type": "Expression"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"dataIntegrationUnits": 2,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "ticket_no",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 1
+								}
+							},
+							{
+								"source": {
+									"name": "flight_id",
+									"type": "Int32"
+								},
+								"sink": {
+									"type": "Int32",
+									"ordinal": 2
+								}
+							},
+							{
+								"source": {
+									"name": "amount",
+									"type": "Decimal"
+								},
+								"sink": {
+									"type": "Decimal",
+									"ordinal": 3
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "BookingsTable",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SetByYearAndMonthAndDay",
+						"type": "DatasetReference",
+						"parameters": {
+							"stage": "raw",
+							"day": {
+								"value": "@variables('day')",
+								"type": "Expression"
+							},
+							"month": {
+								"value": "@variables('month')",
+								"type": "Expression"
+							},
+							"year": {
+								"value": "@variables('year')",
+								"type": "Expression"
+							},
+							"fileName": "ticket_flights"
+						}
+					}
+				]
+			},
+			{
+				"name": "copy airports",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "set variables",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzurePostgreSqlSource",
+						"query": "SELECT \n  airport_code, \n  airport_name,\n  city, \n  longitude AS x, \n  latitude AS y\nFROM bookings.airports\n  "
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"dataIntegrationUnits": 2,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"name": "airport_code",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 1
+								}
+							},
+							{
+								"source": {
+									"name": "airport_name",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 2
+								}
+							},
+							{
+								"source": {
+									"name": "city",
+									"type": "String"
+								},
+								"sink": {
+									"type": "String",
+									"ordinal": 3
+								}
+							},
+							{
+								"source": {
+									"name": "x",
+									"type": "Double"
+								},
+								"sink": {
+									"type": "Decimal",
+									"ordinal": 4
+								}
+							},
+							{
+								"source": {
+									"name": "y",
+									"type": "Double"
+								},
+								"sink": {
+									"type": "Decimal",
+									"ordinal": 5
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "AirportsTable",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SetByYearAndMonthAndDay",
+						"type": "DatasetReference",
+						"parameters": {
+							"stage": "raw",
+							"day": {
+								"value": "@variables('day')",
+								"type": "Expression"
+							},
+							"month": {
+								"value": "@variables('month')",
+								"type": "Expression"
+							},
+							"year": {
+								"value": "@variables('year')",
+								"type": "Expression"
+							},
+							"fileName": "airports"
+						}
+					}
+				]
 			}
 		],
 		"variables": {
