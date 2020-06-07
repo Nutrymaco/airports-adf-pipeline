@@ -82,7 +82,7 @@
 							"typeProperties": {
 								"variableName": "part_of_day",
 								"value": {
-									"value": "@int(div(int(formatDateTime(utcNow(), 'hh')),\ndiv(24, int(variables('count_of_parts')))\n))",
+									"value": "@string(int(div(int(formatDateTime(utcNow(), 'hh')),\ndiv(24, int(variables('count_of_parts')))\n)))",
 									"type": "Expression"
 								}
 							}
