@@ -242,7 +242,7 @@
 					"source": {
 						"type": "AzurePostgreSqlSource",
 						"query": {
-							"value": "select distinct\n      tf.ticket_no, tf.flight_id, tf.amount \nfrom bookings.ticket_flights tf\n    join bookings.tickets t on tf.ticket_no = t.ticket_no\n    join bookings.bookings b on t.book_ref = b.book_ref\nwhere\n    extract(year from b.book_date) = @{variables('year')}\n        and\n    extract(month from b.book_date) = @{variables('month')}\n        and\n    extract(day from b.book_date) = @{variables('day')}\n        and\n    extract(hour from b.book_date) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\t    and\n    extract(hour from b.book_date) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}\n\n",
+							"value": "select\n      tf.ticket_no, tf.flight_id, tf.amount \nfrom bookings.ticket_flights tf\n    join bookings.tickets t on tf.ticket_no = t.ticket_no\n    join bookings.bookings b on t.book_ref = b.book_ref\nwhere\n    extract(year from b.book_date) = @{variables('year')}\n        and\n    extract(month from b.book_date) = @{variables('month')}\n        and\n    extract(day from b.book_date) = @{variables('day')}\n        and\n    extract(hour from b.book_date) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\t    and\n    extract(hour from b.book_date) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}\n\n",
 							"type": "Expression"
 						}
 					},
@@ -767,7 +767,8 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "join_flights_tickets_airports_by_part_of_day"
+							"fileName": "join_flights_tickets_airports_by_part_of_day",
+							"pipelineName": "pipeline"
 						}
 					}
 				],
@@ -789,7 +790,8 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "join_flights_tickets_airports_by_day"
+							"fileName": "join_flights_tickets_airports_by_day",
+							"pipelineName": "pipeline"
 						}
 					}
 				]
@@ -814,8 +816,32 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
 					"enableStaging": false
-				}
+				},
+				"inputs": [
+					{
+						"referenceName": "SetByYearAndMonthAndDay",
+						"type": "DatasetReference",
+						"parameters": {
+							"stage": "none",
+							"day": "01",
+							"month": "01",
+							"year": "2020",
+							"fileName": "fileName",
+							"pipelineName": "pipeline"
+						}
+					}
+				]
 			},
 			{
 				"name": "CREATE NEW REPORT",
