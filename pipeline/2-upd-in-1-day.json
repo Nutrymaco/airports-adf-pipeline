@@ -445,7 +445,11 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "airports_by_part_of_day"
+							"fileName": "airports",
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				]
