@@ -113,7 +113,7 @@
 					"source": {
 						"type": "AzurePostgreSqlSource",
 						"query": {
-							"value": "select * from bookings.flights\nwhere EXTRACT(year from scheduled_departure) = @{variables('year')}\n        and\n      EXTRACT(month from scheduled_departure) = @{variables('month')}\n        and\n      EXTRACT(day from scheduled_departure) = @{variables('day')}\n\tand\n      EXTRACT(hour from scheduled_departure) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\tand\n      EXTRACT(hour from scheduled_departure) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}",
+							"value": "select\n    f.flight_id, f.departure_airport, f.arrival_airport, scheduled_departure, scheduled_arrival\nfrom bookings.flights f\n    join bookings.ticket_flights tf on f.flight_id = tf.flight_id\n    join bookings.tickets t on tf.ticket_no = t.ticket_no\n    join bookings.bookings b on t.book_ref = b.book_ref\nwhere\n    extract(year from b.book_date) = @{variables('year')}\n        and\n    extract(month from b.book_date) = @{variables('month')}\n        and\n    extract(day from b.book_date) = @{variables('day')}\n        and\n    extract(hour from b.book_date) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\t    and\n    extract(hour from b.book_date) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}",
 							"type": "Expression"
 						}
 					},
@@ -242,7 +242,7 @@
 					"source": {
 						"type": "AzurePostgreSqlSource",
 						"query": {
-							"value": "select t.ticket_no, t.flight_id, t.amount from bookings.ticket_flights t\njoin bookings.flights f on t.flight_id = f.flight_id\nwhere EXTRACT(year from scheduled_departure) = @{variables('year')}\n        and\n      EXTRACT(month from scheduled_departure) = @{variables('month')}\n       and\n      EXTRACT(day from scheduled_departure) = @{variables('day')}\n\tand\n      EXTRACT(hour from scheduled_departure) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\tand\n      EXTRACT(hour from scheduled_departure) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}\n",
+							"value": "select \n      tf.ticket_no, tf.flight_id, tf.amount \nfrom bookings.ticket_flights tf\n    join bookings,tickets t on tf.ticket_no = t.ticket_no\n    join bookings.bookings b on t.book_ref = b.book_ref\nwhere\n    extract(year from b.book_date) = @{variables('year')}\n        and\n    extract(month from b.book_date) = @{variables('month')}\n        and\n    extract(day from b.book_date) = @{variables('day')}\n        and\n    extract(hour from b.book_date) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\t    and\n    extract(hour from b.book_date) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}\n\n",
 							"type": "Expression"
 						}
 					},
@@ -864,7 +864,7 @@
 					"source": {
 						"type": "AzurePostgreSqlSource",
 						"query": {
-							"value": "select\n       b.book_ref, book_date, total_amount\nfrom bookings.bookings b\n    join bookings.tickets t on b.book_ref = t.book_ref\n    join bookings.ticket_flights tf on t.ticket_no = tf.ticket_no\n    join bookings.flights f on tf.flight_id = f.flight_id\nwhere\n    extract(year from f.scheduled_departure) = @{variables('year')}\n        and\n    extract(month from f.scheduled_departure) = @{variables('month')}\n and\n      EXTRACT(day from scheduled_departure) = @{variables('day')}\n       and\n      EXTRACT(hour from scheduled_departure) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\tand\n      EXTRACT(hour from scheduled_departure) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}",
+							"value": "select\n       b.book_ref, book_date, total_amount\nfrom bookings.bookings b\nwhere\n    extract(year from b.book_date) = @{variables('year')}\n        and\n    extract(month from b.book_date) = @{variables('month')}\n        and\n    extract(day from b.book_date) = @{variables('day')}\n        and\n    extract(hour from b.book_date) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\t    and\n    extract(hour from b.book_date) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}\n",
 							"type": "Expression"
 						}
 					},
@@ -972,7 +972,7 @@
 					"source": {
 						"type": "AzurePostgreSqlSource",
 						"query": {
-							"value": "select\n    t.ticket_no, t.book_ref, t.passenger_id, t.passenger_name,\n   t.contact_data->>'phone' as phone, t.contact_data->>'email' as email\nfrom bookings.tickets t\n    join bookings.ticket_flights tf on t.ticket_no = tf.ticket_no\n    join bookings.flights f on tf.flight_id = f.flight_id\nwhere\n    extract(year from f.scheduled_departure) = @{variables('year')}\n        and\n    extract(month from f.scheduled_departure) = @{variables('month')}\n and\n      EXTRACT(day from scheduled_departure) = @{variables('day')}\n       and\n      EXTRACT(hour from scheduled_departure) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\tand\n      EXTRACT(hour from scheduled_departure) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}",
+							"value": "select\n    t.ticket_no, t.book_ref, t.passenger_id, t.passenger_name,\n   t.contact_data->>'phone' as phone, t.contact_data->>'email' as email\nfrom bookings.tickets t\n    join bookings.bookings b on t.book_ref = b.book_ref\nwhere\n    extract(year from b.book_date) = @{variables('year')}\n        and\n    extract(month from b.book_date) = @{variables('month')}\n        and\n    extract(day from b.book_date) = @{variables('day')}\n        and\n    extract(hour from b.book_date) < @{int(variables('part_of_day'))} * 24/@{int(variables('count_of_parts'))}\n\t    and\n    extract(hour from b.book_date) >= @{add(int(variables('part_of_day')), -1)} * 24/@{int(variables('count_of_parts'))}",
 							"type": "Expression"
 						}
 					},
@@ -1110,8 +1110,7 @@
 				"defaultValue": "2"
 			},
 			"set_actual": {
-				"type": "Boolean",
-				"defaultValue": false
+				"type": "Boolean"
 			},
 			"pipelineName": {
 				"type": "String",
