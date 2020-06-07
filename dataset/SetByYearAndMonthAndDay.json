@@ -25,6 +25,10 @@
 			"fileName": {
 				"type": "string",
 				"defaultValue": "fileName"
+			},
+			"pipelineName": {
+				"type": "string",
+				"defaultValue": "pipeline"
 			}
 		},
 		"annotations": [],
@@ -37,7 +41,7 @@
 					"type": "Expression"
 				},
 				"folderPath": {
-					"value": "@concat(concat(concat(dataset().stage, '/'),\nconcat(dataset().year, '/')),\nconcat(\nconcat(dataset().month, '/'),\nconcat(dataset().day, '/')))",
+					"value": "@concat(dataset().stage, '/', dataset().year, '/', dataset().month, '/', dataset().day, '/', dataset().pipelineName, '/')",
 					"type": "Expression"
 				}
 			},

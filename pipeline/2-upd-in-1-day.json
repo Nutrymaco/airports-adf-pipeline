@@ -210,7 +210,11 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "flights_by_part_of_day"
+							"fileName": "flights",
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				]
@@ -315,7 +319,11 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "ticket_flights_by_part_of_day"
+							"fileName": "ticket_flights",
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				]
@@ -912,10 +920,14 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "SetByYearAndMonth",
+						"referenceName": "SetByYearAndMonthAndDay",
 						"type": "DatasetReference",
 						"parameters": {
 							"stage": "raw",
+							"day": {
+								"value": "@variables('day')",
+								"type": "Expression"
+							},
 							"month": {
 								"value": "@variables('month')",
 								"type": "Expression"
@@ -924,7 +936,11 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "bookings"
+							"fileName": "bookings",
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				]
@@ -1042,10 +1058,14 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "SetByYearAndMonth",
+						"referenceName": "SetByYearAndMonthAndDay",
 						"type": "DatasetReference",
 						"parameters": {
 							"stage": "raw",
+							"day": {
+								"value": "@variables('day')",
+								"type": "Expression"
+							},
 							"month": {
 								"value": "@variables('month')",
 								"type": "Expression"
@@ -1054,7 +1074,11 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "tickets"
+							"fileName": "tickets",
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				]
