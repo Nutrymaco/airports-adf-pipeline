@@ -602,7 +602,13 @@
 						}
 					},
 					"sink": {
-						"type": "AzureSqlSink"
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 10000,
+						"writeBatchTimeout": "00:00:30",
+						"preCopyScript": {
+							"value": "DELETE FROM flight_amount\nWHERE  extract(year from agg_date) = @{variables('year')}\nAND\n    extract(month from scheduled_departure) @{variables('month')}\n    AND\n    extract(day from scheduled_departure) as @{variables('day')}",
+							"type": "Expression"
+						}
 					},
 					"enableStaging": false,
 					"dataIntegrationUnits": 2,
@@ -780,7 +786,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "GOSHA_FLIGHT_AMOUNT",
+						"referenceName": "GOSHA_AMOUNTS",
 						"type": "DatasetReference"
 					}
 				]
@@ -825,7 +831,13 @@
 						}
 					},
 					"sink": {
-						"type": "AzureSqlSink"
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 10000,
+						"writeBatchTimeout": "00:00:30",
+						"preCopyScript": {
+							"value": "DELETE FROM flight_latency\nWHERE  extract(year from agg_date) = @{variables('year')}\nAND\n    extract(month from scheduled_departure) @{variables('month')}\n    AND\n    extract(day from scheduled_departure) as @{variables('day')}",
+							"type": "Expression"
+						}
 					},
 					"enableStaging": false,
 					"dataIntegrationUnits": 2,
@@ -933,7 +945,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "GOSHA_FLIGHT_LATENCY",
+						"referenceName": "GOSHA_LATENCY",
 						"type": "DatasetReference"
 					}
 				]
