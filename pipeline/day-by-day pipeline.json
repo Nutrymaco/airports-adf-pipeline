@@ -606,7 +606,7 @@
 						"writeBatchSize": 10000,
 						"writeBatchTimeout": "00:00:30",
 						"preCopyScript": {
-							"value": "DELETE FROM flight_amount\nWHERE  extract(year from agg_date) = @{int(variables('year'))}\nAND\n    extract(month from scheduled_departure) = @{int(variables('month'))}\n    AND\n    extract(day from scheduled_departure) = @{int(variables('day'))}",
+							"value": "DELETE FROM flight_amount\nWHERE  extract(year from agg_date) = @{int(variables('year'))}\nAND\n    extract(month from agg_date) = @{int(variables('month'))}\n    AND\n    extract(day from agg_date) = @{int(variables('day'))}",
 							"type": "Expression"
 						}
 					},
@@ -835,7 +835,7 @@
 						"writeBatchSize": 10000,
 						"writeBatchTimeout": "00:00:30",
 						"preCopyScript": {
-							"value": "DELETE FROM flight_latency\nWHERE  extract(year from agg_date) = @{int(variables('year'))}\nAND\n    extract(month from scheduled_departure) = @{int(variables('month'))}\n    AND\n    extract(day from scheduled_departure) = @{int(variables('day'))}",
+							"value": "DELETE FROM flight_latency\nWHERE  extract(year from agg_date) = @{int(variables('year'))}\nAND\n    extract(month from agg_date) = @{int(variables('month'))}\n    AND\n    extract(day from agg_date) = @{int(variables('day'))}",
 							"type": "Expression"
 						}
 					},
