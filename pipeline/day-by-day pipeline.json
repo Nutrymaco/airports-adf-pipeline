@@ -122,7 +122,11 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "flights"
+							"fileName": "flights",
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				]
@@ -227,7 +231,11 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "ticket_flights"
+							"fileName": "ticket_flights",
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				]
@@ -349,7 +357,11 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "airports"
+							"fileName": "airports",
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				]
@@ -390,6 +402,10 @@
 						},
 						"year": {
 							"value": "@variables('year')",
+							"type": "Expression"
+						},
+						"pipelineName": {
+							"value": "@variables('pipelineName')",
 							"type": "Expression"
 						}
 					}
@@ -436,6 +452,10 @@
 						"year": {
 							"value": "@variables('year')",
 							"type": "Expression"
+						},
+						"pipelineName": {
+							"value": "@variables('pipelineName')",
+							"type": "Expression"
 						}
 					}
 				},
@@ -481,6 +501,10 @@
 						"year": {
 							"value": "@variables('year')",
 							"type": "Expression"
+						},
+						"pipelineName": {
+							"value": "@variables('pipelineName')",
+							"type": "Expression"
 						}
 					}
 				},
@@ -525,6 +549,10 @@
 						},
 						"year": {
 							"value": "@variables('year')",
+							"type": "Expression"
+						},
+						"pipelineName": {
+							"value": "@variables('pipelineName')",
 							"type": "Expression"
 						}
 					}
@@ -742,7 +770,11 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "flights_amount_report"
+							"fileName": "flights_amount_report",
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				],
@@ -891,7 +923,11 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "flights_latency_report"
+							"fileName": "flights_latency_report",
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				],
@@ -1002,7 +1038,7 @@
 		"variables": {
 			"day": {
 				"type": "String",
-				"defaultValue": "06"
+				"defaultValue": "10"
 			},
 			"month": {
 				"type": "String",
@@ -1014,6 +1050,10 @@
 			},
 			"actual": {
 				"type": "Boolean"
+			},
+			"pipelineName": {
+				"type": "String",
+				"defaultValue": "day_amounts_and_latency"
 			}
 		},
 		"annotations": []
