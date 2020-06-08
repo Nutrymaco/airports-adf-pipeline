@@ -648,7 +648,7 @@
 					},
 					"sink": {
 						"type": "AzurePostgreSQLSink",
-						"writeBatchSize": 10000,
+						"writeBatchSize": 4000,
 						"writeBatchTimeout": "00:00:30",
 						"preCopyScript": {
 							"value": "DELETE FROM booking\nWHERE  extract(year from agg_date) = @{int(variables('year'))}\nAND\n    extract(month from agg_date) = @{int(variables('month'))}",
