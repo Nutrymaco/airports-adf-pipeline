@@ -877,8 +877,8 @@
 				],
 				"policy": {
 					"timeout": "7.00:00:00",
-					"retry": 4,
-					"retryIntervalInSeconds": 35,
+					"retry": 10,
+					"retryIntervalInSeconds": 55,
 					"secureOutput": false,
 					"secureInput": false
 				},
