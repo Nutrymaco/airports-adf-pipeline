@@ -706,7 +706,7 @@
 						"referenceName": "SetByYearAndMonthAndDay",
 						"type": "DatasetReference",
 						"parameters": {
-							"stage": "recycle/output",
+							"stage": "output/recycle",
 							"day": {
 								"value": "@variables('day')",
 								"type": "Expression"
@@ -1052,7 +1052,7 @@
 						"referenceName": "SetByYearAndMonthAndDay",
 						"type": "DatasetReference",
 						"parameters": {
-							"stage": "recycle/process",
+							"stage": "process/ recycle",
 							"day": {
 								"value": "@variables('day')",
 								"type": "Expression"
@@ -1069,7 +1069,10 @@
 								"value": "@concat('join_flights_tickets_airports_(', \nstring(int(variables('part_of_day'))), '/', variables('count_of_parts'), ')')",
 								"type": "Expression"
 							},
-							"pipelineName": "pipeline"
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				]
