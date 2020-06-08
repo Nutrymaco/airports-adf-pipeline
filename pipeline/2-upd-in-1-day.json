@@ -706,7 +706,7 @@
 						"referenceName": "SetByYearAndMonthAndDay",
 						"type": "DatasetReference",
 						"parameters": {
-							"stage": "output/recycle",
+							"stage": "recycle/output",
 							"day": {
 								"value": "@variables('day')",
 								"type": "Expression"
@@ -1052,7 +1052,7 @@
 						"referenceName": "SetByYearAndMonthAndDay",
 						"type": "DatasetReference",
 						"parameters": {
-							"stage": "process/recycle",
+							"stage": "recycle/process",
 							"day": {
 								"value": "@variables('day')",
 								"type": "Expression"
