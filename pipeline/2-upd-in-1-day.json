@@ -104,7 +104,7 @@
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 3,
-					"retryIntervalInSeconds": 15,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -221,7 +221,7 @@
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 3,
-					"retryIntervalInSeconds": 9,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -779,7 +779,7 @@
 					"source": {
 						"type": "AzurePostgreSqlSource",
 						"query": {
-							"value": "select distinct\n       b.book_ref, book_date, total_amount\nfrom bookings.bookings b\n",
+							"value": "select\n       b.book_ref, book_date, total_amount\nfrom bookings.bookings b\n",
 							"type": "Expression"
 						}
 					},
