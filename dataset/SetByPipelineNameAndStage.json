@@ -1,0 +1,42 @@
+{
+	"name": "SetByPipelineNameAndStage",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStore1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"stage": {
+				"type": "string",
+				"defaultValue": "none"
+			},
+			"pipeiineName": {
+				"type": "string",
+				"defaultValue": "pipeline"
+			},
+			"fileName": {
+				"type": "string",
+				"defaultValue": "fileName"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureDataLakeStoreLocation",
+				"fileName": {
+					"value": "@concat(dataset().fileName, '.csv')",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@concat(dataset().pipeiineName, '/', dataset().stage, '/')",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

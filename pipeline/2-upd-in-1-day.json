@@ -597,23 +597,15 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "SetByYearAndMonthAndDay",
+						"referenceName": "SetByPipelineNameAndStage",
 						"type": "DatasetReference",
 						"parameters": {
 							"stage": "process",
-							"day": {
-								"value": "@variables('day')",
+							"pipeiineName": {
+								"value": "@variables('pipelineName')",
 								"type": "Expression"
 							},
-							"month": {
-								"value": "@variables('month')",
-								"type": "Expression"
-							},
-							"year": {
-								"value": "@variables('year')",
-								"type": "Expression"
-							},
-							"fileName": "join_flights_tickets_airports_by_day"
+							"fileName": "joined_full_flights_tickets_airports_bookings"
 						}
 					}
 				],
@@ -638,7 +630,8 @@
 							"fileName": {
 								"value": "@concat('join_flights_tickets_airports_(', \nstring(add(int(variables('part_of_day')), -1)), '/', variables('count_of_parts'), ')')",
 								"type": "Expression"
-							}
+							},
+							"pipelineName": "pipeline"
 						}
 					}
 				]
@@ -751,47 +744,29 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "SetByYearAndMonthAndDay",
+						"referenceName": "SetByPipelineNameAndStage",
 						"type": "DatasetReference",
 						"parameters": {
 							"stage": "process",
-							"day": {
-								"value": "@variables('day')",
+							"pipeiineName": {
+								"value": "@variables('pipelineName')",
 								"type": "Expression"
 							},
-							"month": {
-								"value": "@variables('month')",
-								"type": "Expression"
-							},
-							"year": {
-								"value": "@variables('year')",
-								"type": "Expression"
-							},
-							"fileName": "join_flights_tickets_airports_by_part_of_day",
-							"pipelineName": "pipeline"
+							"fileName": "joined_part_flights_tickets_airports_bookings"
 						}
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "SetByYearAndMonthAndDay",
+						"referenceName": "SetByPipelineNameAndStage",
 						"type": "DatasetReference",
 						"parameters": {
 							"stage": "process",
-							"day": {
-								"value": "@variables('day')",
+							"pipeiineName": {
+								"value": "@variables('pipelineName')",
 								"type": "Expression"
 							},
-							"month": {
-								"value": "@variables('month')",
-								"type": "Expression"
-							},
-							"year": {
-								"value": "@variables('year')",
-								"type": "Expression"
-							},
-							"fileName": "join_flights_tickets_airports_by_day",
-							"pipelineName": "pipeline"
+							"fileName": "joined_full_flights_tickets_airports_bookings"
 						}
 					}
 				]
@@ -826,19 +801,59 @@
 							"type": "DelimitedTextReadSettings"
 						}
 					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
 					"enableStaging": false
 				},
 				"inputs": [
 					{
+						"referenceName": "SetByPipelineNameAndStage",
+						"type": "DatasetReference",
+						"parameters": {
+							"stage": "output",
+							"pipeiineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							},
+							"fileName": "popular_directions_report"
+						}
+					}
+				],
+				"outputs": [
+					{
 						"referenceName": "SetByYearAndMonthAndDay",
 						"type": "DatasetReference",
 						"parameters": {
-							"stage": "none",
-							"day": "01",
-							"month": "01",
-							"year": "2020",
-							"fileName": "fileName",
-							"pipelineName": "pipeline"
+							"stage": "output/recycle",
+							"day": {
+								"value": "@variables('day')",
+								"type": "Expression"
+							},
+							"month": {
+								"value": "@variables('month')",
+								"type": "Expression"
+							},
+							"year": {
+								"value": "@variables('year')",
+								"type": "Expression"
+							},
+							"fileName": {
+								"value": "@concat('popular_directions_report(', \nstring(add(int(variables('part_of_day')), -1)), '/', variables('count_of_parts'), ')')",
+								"type": "Expression"
+							},
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				]
@@ -864,7 +879,21 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"scriptPath": ""
+					"scriptPath": "scripts/popular_directions_report.usql",
+					"scriptLinkedService": {
+						"referenceName": "AzureDataLakeStore1",
+						"type": "LinkedServiceReference"
+					},
+					"parameters": {
+						"pipelineName": {
+							"value": "@variables('pipelineName')",
+							"type": "Expression"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeAnalytics1",
+					"type": "LinkedServiceReference"
 				}
 			},
 			{
