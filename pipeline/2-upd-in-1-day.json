@@ -103,8 +103,8 @@
 				],
 				"policy": {
 					"timeout": "7.00:00:00",
-					"retry": 2,
-					"retryIntervalInSeconds": 30,
+					"retry": 3,
+					"retryIntervalInSeconds": 15,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -232,8 +232,8 @@
 				],
 				"policy": {
 					"timeout": "7.00:00:00",
-					"retry": 2,
-					"retryIntervalInSeconds": 30,
+					"retry": 3,
+					"retryIntervalInSeconds": 9,
 					"secureOutput": false,
 					"secureInput": false
 				},
