@@ -503,6 +503,10 @@
 						"month": {
 							"value": "@variables('month')",
 							"type": "Expression"
+						},
+						"pipelineName": {
+							"value": "@variables('pipelineName')",
+							"type": "Expression"
 						}
 					}
 				},
@@ -590,6 +594,10 @@
 						},
 						"month": {
 							"value": "@variables('month')",
+							"type": "Expression"
+						},
+						"pipelineName": {
+							"value": "@variables('pipelineName')",
 							"type": "Expression"
 						}
 					}
@@ -785,7 +793,7 @@
 		"variables": {
 			"month": {
 				"type": "String",
-				"defaultValue": "05"
+				"defaultValue": "10"
 			},
 			"year": {
 				"type": "String",
