@@ -556,7 +556,7 @@
 				"type": "DataLakeAnalyticsU-SQL",
 				"dependsOn": [
 					{
-						"activity": "Wait1",
+						"activity": "WRITE UPDATE",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -614,12 +614,6 @@
 				"dependsOn": [
 					{
 						"activity": "CREATE JOIN BY PART OF DAY",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "CLEAR CURRENT PROCESS FROM OLD",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -1061,7 +1055,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "WRITE UPDATE",
+						"activity": "CLEAR CURRENT PROCESS FROM OLD",
 						"dependencyConditions": [
 							"Succeeded"
 						]
