@@ -1,0 +1,805 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "sen-adf"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/month-by-month')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy flights",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "set actual month and year",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": {
+									"value": "select * from bookings.flights\nwhere EXTRACT(year from scheduled_departure) = @{variables('year')}\n        and\n      EXTRACT(month from scheduled_departure) = @{variables('month')}",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 2,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "flight_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 1
+										}
+									},
+									{
+										"source": {
+											"name": "scheduled_departure",
+											"type": "DateTime"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 2
+										}
+									},
+									{
+										"source": {
+											"name": "scheduled_arrival",
+											"type": "DateTime"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 3
+										}
+									},
+									{
+										"source": {
+											"name": "departure_airport",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 4
+										}
+									},
+									{
+										"source": {
+											"name": "arrival_airport",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 5
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "FlightsTable",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SetByYearAndMonth",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "raw",
+									"month": {
+										"value": "@variables('month')",
+										"type": "Expression"
+									},
+									"year": {
+										"value": "@variables('year')",
+										"type": "Expression"
+									},
+									"fileName": "flights"
+								}
+							}
+						]
+					},
+					{
+						"name": "Copy bookings",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "set actual month and year",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": {
+									"value": "select\n       b.book_ref, book_date, total_amount\nfrom bookings.bookings b\n    join bookings.tickets t on b.book_ref = t.book_ref\n    join bookings.ticket_flights tf on t.ticket_no = tf.ticket_no\n    join bookings.flights f on tf.flight_id = f.flight_id\nwhere\n    extract(year from f.scheduled_departure) = @{variables('year')}\n        and\n    extract(month from f.scheduled_departure) = @{variables('month')}",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "book_ref",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 1
+										}
+									},
+									{
+										"source": {
+											"name": "book_date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 2
+										}
+									},
+									{
+										"source": {
+											"name": "total_amount",
+											"type": "Decimal"
+										},
+										"sink": {
+											"type": "Decimal",
+											"ordinal": 3
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AnyTable",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SetByYearAndMonth",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "raw",
+									"month": {
+										"value": "@variables('month')",
+										"type": "Expression"
+									},
+									"year": {
+										"value": "@variables('year')",
+										"type": "Expression"
+									},
+									"fileName": "bookings"
+								}
+							}
+						]
+					},
+					{
+						"name": "copy ticket_flights",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "set actual month and year",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": {
+									"value": "select t.ticket_no, t.flight_id, t.amount from bookings.ticket_flights t\njoin bookings.flights f on t.flight_id = f.flight_id\nwhere EXTRACT(year from scheduled_departure) = @{variables('year')}\n        and\n      EXTRACT(month from scheduled_departure) = @{variables('month')}",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 2,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ticket_no",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 1
+										}
+									},
+									{
+										"source": {
+											"name": "flight_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 2
+										}
+									},
+									{
+										"source": {
+											"name": "amount",
+											"type": "Decimal"
+										},
+										"sink": {
+											"type": "Decimal",
+											"ordinal": 3
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "BookingsTable",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SetByYearAndMonth",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "raw",
+									"month": {
+										"value": "@variables('month')",
+										"type": "Expression"
+									},
+									"year": {
+										"value": "@variables('year')",
+										"type": "Expression"
+									},
+									"fileName": "ticket_flights"
+								}
+							}
+						]
+					},
+					{
+						"name": "Copy tickets",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "set actual month and year",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": {
+									"value": "select\n    t.ticket_no, t.book_ref, t.passenger_id, t.passenger_name,\n   t.contact_data->>'phone' as phone, t.contact_data->>'email' as email\nfrom bookings.tickets t\n    join bookings.ticket_flights tf on t.ticket_no = tf.ticket_no\n    join bookings.flights f on tf.flight_id = f.flight_id\nwhere\n    extract(year from f.scheduled_departure) = @{variables('year')}\n        and\n    extract(month from f.scheduled_departure) = @{variables('month')}",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ticket_no",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 1
+										}
+									},
+									{
+										"source": {
+											"name": "book_ref",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 2
+										}
+									},
+									{
+										"source": {
+											"name": "passenger_id",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 3
+										}
+									},
+									{
+										"source": {
+											"name": "passenger_name",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 4
+										}
+									},
+									{
+										"source": {
+											"name": "phone",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 5
+										}
+									},
+									{
+										"source": {
+											"name": "email",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 6
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AnyTable",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SetByYearAndMonth",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "raw",
+									"month": {
+										"value": "@variables('month')",
+										"type": "Expression"
+									},
+									"year": {
+										"value": "@variables('year')",
+										"type": "Expression"
+									},
+									"fileName": "tickets"
+								}
+							}
+						]
+					},
+					{
+						"name": "JOIN BOOKINGS AND FLIGHTS",
+						"type": "DataLakeAnalyticsU-SQL",
+						"dependsOn": [
+							{
+								"activity": "Wait1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"scriptPath": "scripts/join_bookings_and_flights.usql",
+							"scriptLinkedService": {
+								"referenceName": "AzureDataLakeStore1",
+								"type": "LinkedServiceReference"
+							},
+							"parameters": {
+								"year": {
+									"value": "@variables('year')",
+									"type": "Expression"
+								},
+								"month": {
+									"value": "@variables('month')",
+									"type": "Expression"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDataLakeAnalytics1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "set actual month and year",
+						"type": "IfCondition",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('actual')",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "set month",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "month",
+										"value": {
+											"value": "@formatDateTime(addDays(utcnow(), -1), 'MM')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "set year",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "set month",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "year",
+										"value": {
+											"value": "@formatDateTime(addDays(utcnow(), -1), 'yyyy')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "CREATE REPORT",
+						"type": "DataLakeAnalyticsU-SQL",
+						"dependsOn": [
+							{
+								"activity": "JOIN BOOKINGS AND FLIGHTS",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"scriptPath": "scripts/agg_bookings_report.usql",
+							"scriptLinkedService": {
+								"referenceName": "AzureDataLakeStore1",
+								"type": "LinkedServiceReference"
+							},
+							"parameters": {
+								"year": {
+									"value": "@variables('year')",
+									"type": "Expression"
+								},
+								"month": {
+									"value": "@variables('month')",
+									"type": "Expression"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDataLakeAnalytics1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "COPY REPORT",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "CREATE REPORT",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"additionalColumns": [
+									{
+										"name": "agg_date",
+										"value": {
+											"value": "@concat(variables('year'), '-', variables('month'), '-', '01')",
+											"type": "Expression"
+										}
+									}
+								],
+								"storeSettings": {
+									"type": "AzureDataLakeStoreReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink"
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 1
+										},
+										"sink": {
+											"name": "book_number",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 2
+										},
+										"sink": {
+											"name": "people_amount",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 3
+										},
+										"sink": {
+											"name": "flight_count",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 4
+										},
+										"sink": {
+											"name": "book_and_flight_diff",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 5
+										},
+										"sink": {
+											"name": "average_ticket_price",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 6
+										},
+										"sink": {
+											"name": "book_sum",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "agg_date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "agg_date",
+											"type": "DateTime"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SetByYearAndMonth",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "output",
+									"month": {
+										"value": "@variables('month')",
+										"type": "Expression"
+									},
+									"year": {
+										"value": "@variables('year')",
+										"type": "Expression"
+									},
+									"fileName": "bookings_diff_report"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "GOSHA_BOOKING_TABLE",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					},
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "copy flights",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Copy bookings",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "copy ticket_flights",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Copy tickets",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					}
+				],
+				"variables": {
+					"month": {
+						"type": "String",
+						"defaultValue": "05"
+					},
+					"year": {
+						"type": "String",
+						"defaultValue": "2020"
+					},
+					"actual": {
+						"type": "Boolean",
+						"defaultValue": true
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		}
+	]
+}
