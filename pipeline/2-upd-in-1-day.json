@@ -459,10 +459,9 @@
 				"type": "DataLakeAnalyticsU-SQL",
 				"dependsOn": [
 					{
-						"activity": "COPY CURRENT PROCESS TO RECYCLE",
+						"activity": "Wait1",
 						"dependencyConditions": [
-							"Succeeded",
-							"Failed"
+							"Succeeded"
 						]
 					}
 				],
@@ -553,95 +552,11 @@
 				}
 			},
 			{
-				"name": "COPY CURRENT PROCESS TO RECYCLE",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Wait1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureDataLakeStoreReadSettings",
-							"recursive": true
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureDataLakeStoreWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
-					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "SetByPipelineNameAndStage",
-						"type": "DatasetReference",
-						"parameters": {
-							"stage": "process",
-							"pipeiineName": {
-								"value": "@variables('pipelineName')",
-								"type": "Expression"
-							},
-							"fileName": "joined_full_flights_tickets_airports_bookings"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "SetByYearAndMonthAndDay",
-						"type": "DatasetReference",
-						"parameters": {
-							"stage": "process/recycle",
-							"day": {
-								"value": "@variables('day')",
-								"type": "Expression"
-							},
-							"month": {
-								"value": "@variables('month')",
-								"type": "Expression"
-							},
-							"year": {
-								"value": "@variables('year')",
-								"type": "Expression"
-							},
-							"fileName": {
-								"value": "@concat('join_flights_tickets_airports_(', \nstring(add(int(variables('part_of_day')), -1)), '/', variables('count_of_parts'), ')')",
-								"type": "Expression"
-							},
-							"pipelineName": "pipeline"
-						}
-					}
-				]
-			},
-			{
 				"name": "CLEAR CURRENT PROCESS FROM OLD",
 				"type": "DataLakeAnalyticsU-SQL",
 				"dependsOn": [
 					{
-						"activity": "COPY CURRENT PROCESS TO RECYCLE",
+						"activity": "Wait1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -776,7 +691,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "WRITE UPDATE",
+						"activity": "CREATE NEW REPORT",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -847,7 +762,7 @@
 								"type": "Expression"
 							},
 							"fileName": {
-								"value": "@concat('popular_directions_report(', \nstring(add(int(variables('part_of_day')), -1)), '/', variables('count_of_parts'), ')')",
+								"value": "@concat('popular_directions_report(', \nstring(int(variables('part_of_day'))), '/', variables('count_of_parts'), ')')",
 								"type": "Expression"
 							},
 							"pipelineName": {
@@ -863,10 +778,9 @@
 				"type": "DataLakeAnalyticsU-SQL",
 				"dependsOn": [
 					{
-						"activity": "COPY CURRENT REPORT TO RECYCLE",
+						"activity": "COPY CURRENT PROCESS TO RECYCLE",
 						"dependencyConditions": [
-							"Succeeded",
-							"Failed"
+							"Succeeded"
 						]
 					}
 				],
@@ -1138,6 +1052,90 @@
 								"value": "@variables('pipelineName')",
 								"type": "Expression"
 							}
+						}
+					}
+				]
+			},
+			{
+				"name": "COPY CURRENT PROCESS TO RECYCLE",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "WRITE UPDATE",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "SetByPipelineNameAndStage",
+						"type": "DatasetReference",
+						"parameters": {
+							"stage": "process",
+							"pipeiineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							},
+							"fileName": "joined_full_flights_tickets_airports_bookings"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "SetByYearAndMonthAndDay",
+						"type": "DatasetReference",
+						"parameters": {
+							"stage": "process/recycle",
+							"day": {
+								"value": "@variables('day')",
+								"type": "Expression"
+							},
+							"month": {
+								"value": "@variables('month')",
+								"type": "Expression"
+							},
+							"year": {
+								"value": "@variables('year')",
+								"type": "Expression"
+							},
+							"fileName": {
+								"value": "@concat('join_flights_tickets_airports_(', \nstring(int(variables('part_of_day'))), '/', variables('count_of_parts'), ')')",
+								"type": "Expression"
+							},
+							"pipelineName": "pipeline"
 						}
 					}
 				]
