@@ -41,7 +41,7 @@
 					"type": "Expression"
 				},
 				"folderPath": {
-					"value": "@concat(dataset().stage, '/', dataset().year, '/', dataset().month, '/', dataset().day, '/', dataset().pipelineName, '/')",
+					"value": "@concat(dataset().pipelineName, '/',dataset().stage, '/', dataset().year, '/', dataset().month, '/', dataset().day, '/')",
 					"type": "Expression"
 				}
 			},
