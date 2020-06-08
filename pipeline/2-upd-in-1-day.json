@@ -423,7 +423,13 @@
 				"type": "DataLakeAnalyticsU-SQL",
 				"dependsOn": [
 					{
-						"activity": "Wait1",
+						"activity": "Copy tickets",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy bookings",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -493,18 +499,6 @@
 					},
 					{
 						"activity": "copy airports",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Copy tickets",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Copy bookings",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -773,7 +767,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "set variables",
+						"activity": "Wait1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -869,7 +863,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "set variables",
+						"activity": "Wait1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
