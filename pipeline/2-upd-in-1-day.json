@@ -104,7 +104,7 @@
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 3,
-					"retryIntervalInSeconds": 30,
+					"retryIntervalInSeconds": 45,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -221,7 +221,7 @@
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 3,
-					"retryIntervalInSeconds": 30,
+					"retryIntervalInSeconds": 40,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -423,7 +423,7 @@
 				"type": "DataLakeAnalyticsU-SQL",
 				"dependsOn": [
 					{
-						"activity": "Copy tickets",
+						"activity": "Wait1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -493,6 +493,18 @@
 					},
 					{
 						"activity": "copy airports",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy bookings",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy tickets",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -761,7 +773,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Wait1",
+						"activity": "set variables",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -857,7 +869,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Copy bookings",
+						"activity": "set variables",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -866,7 +878,7 @@
 				"policy": {
 					"timeout": "7.00:00:00",
 					"retry": 2,
-					"retryIntervalInSeconds": 30,
+					"retryIntervalInSeconds": 35,
 					"secureOutput": false,
 					"secureInput": false
 				},
