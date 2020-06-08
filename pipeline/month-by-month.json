@@ -118,7 +118,11 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "flights"
+							"fileName": "flights",
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				]
@@ -218,7 +222,11 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "bookings"
+							"fileName": "bookings",
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				]
@@ -319,7 +327,11 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "ticket_flights"
+							"fileName": "ticket_flights",
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				]
@@ -449,7 +461,11 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "tickets"
+							"fileName": "tickets",
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				]
@@ -716,7 +732,11 @@
 								"value": "@variables('year')",
 								"type": "Expression"
 							},
-							"fileName": "bookings_diff_report"
+							"fileName": "bookings_diff_report",
+							"pipelineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							}
 						}
 					}
 				],
@@ -774,6 +794,10 @@
 			"actual": {
 				"type": "Boolean",
 				"defaultValue": true
+			},
+			"pipelineName": {
+				"type": "String",
+				"defaultValue": "month_booking_time"
 			}
 		},
 		"annotations": []
