@@ -13,44 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/GOSHA_LATENCY')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "GOSH_PSQL_CONN",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "public",
-					"table": "flight_latency"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/GOSHA_BOOKINGS')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "GOSH_PSQL_CONN",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "public",
-					"table": "booking"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/2-upd-in-1-day')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -243,8 +205,7 @@
 						"inputs": [
 							{
 								"referenceName": "FlightsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -341,8 +302,7 @@
 						"inputs": [
 							{
 								"referenceName": "BookingsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -456,8 +416,7 @@
 						"inputs": [
 							{
 								"referenceName": "AirportsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -903,8 +862,7 @@
 						"inputs": [
 							{
 								"referenceName": "AnyTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -1030,8 +988,7 @@
 						"inputs": [
 							{
 								"referenceName": "AnyTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -1272,8 +1229,7 @@
 						"inputs": [
 							{
 								"referenceName": "FlightsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -1382,8 +1338,7 @@
 						"inputs": [
 							{
 								"referenceName": "BookingsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -1509,8 +1464,7 @@
 						"inputs": [
 							{
 								"referenceName": "AirportsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -1961,8 +1915,7 @@
 						"outputs": [
 							{
 								"referenceName": "GOSHA_AMOUNTS",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -2121,8 +2074,7 @@
 						"outputs": [
 							{
 								"referenceName": "GOSHA_LATENCY",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -2247,6 +2199,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/GOSHA_AMOUNTS')]",
 				"[concat(variables('factoryId'), '/datasets/GOSHA_LATENCY')]"
 			]
 		},
@@ -2355,8 +2308,7 @@
 						"inputs": [
 							{
 								"referenceName": "FlightsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -2460,8 +2412,7 @@
 						"inputs": [
 							{
 								"referenceName": "AnyTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -2566,8 +2517,7 @@
 						"inputs": [
 							{
 								"referenceName": "BookingsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -2701,8 +2651,7 @@
 						"inputs": [
 							{
 								"referenceName": "AnyTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -3015,8 +2964,7 @@
 						"outputs": [
 							{
 								"referenceName": "GOSHA_BOOKINGS",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -3076,8 +3024,119 @@
 				"annotations": []
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SetByYearAndMonth')]",
 				"[concat(variables('factoryId'), '/datasets/GOSHA_BOOKINGS')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SetByYearAndMonth')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStore1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"stage": {
+						"type": "string",
+						"defaultValue": "none"
+					},
+					"month": {
+						"type": "string",
+						"defaultValue": "01"
+					},
+					"year": {
+						"type": "string",
+						"defaultValue": "2020"
+					},
+					"fileName": {
+						"type": "string",
+						"defaultValue": "file"
+					},
+					"pipelineName": {
+						"type": "string",
+						"defaultValue": "pipeline"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureDataLakeStoreLocation",
+						"fileName": {
+							"value": "@concat(dataset().filename, '.csv')",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat(dataset().pipelineName, '/', dataset().stage, '/', dataset().year, '/', dataset().month, '/')",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GOSHA_AMOUNTS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "GOSH_PSQL_CONN",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "public",
+					"table": "flight_amount"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GOSHA_LATENCY')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "GOSH_PSQL_CONN",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "public",
+					"table": "flight_latency"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/GOSHA_BOOKINGS')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "GOSH_PSQL_CONN",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzurePostgreSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "public",
+					"table": "booking"
+				}
+			},
+			"dependsOn": []
 		}
 	]
 }

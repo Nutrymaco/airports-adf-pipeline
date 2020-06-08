@@ -14,6 +14,9 @@
 		"GoshaBD_connectionString": {
 			"value": ""
 		},
+		"GOSH_PSQL_CONN_connectionString": {
+			"value": ""
+		},
 		"AzureDataLakeAnalytics1_properties_typeProperties_accountName": {
 			"value": "sendla"
 		},
