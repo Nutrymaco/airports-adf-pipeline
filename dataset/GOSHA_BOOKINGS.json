@@ -1,0 +1,16 @@
+{
+	"name": "GOSHA_BOOKINGS",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "GOSH_PSQL_CONN",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "public",
+			"table": "booking"
+		}
+	}
+}
