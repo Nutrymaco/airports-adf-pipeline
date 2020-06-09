@@ -697,7 +697,7 @@
 								"value": "@variables('pipelineName')",
 								"type": "Expression"
 							},
-							"fileName": "popular_directions_report"
+							"fileName": "popular_directions"
 						}
 					}
 				],
@@ -1074,6 +1074,64 @@
 								"type": "Expression"
 							}
 						}
+					}
+				]
+			},
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "CREATE NEW REPORT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureDataLakeStoreReadSettings",
+							"recursive": true
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"sink": {
+						"type": "AzurePostgreSQLSink",
+						"writeBatchSize": 10000,
+						"writeBatchTimeout": "00:00:30"
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "SetByPipelineNameAndStage",
+						"type": "DatasetReference",
+						"parameters": {
+							"stage": "output",
+							"pipeiineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							},
+							"fileName": "popular_directions"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "GOSHA_POP_DIR",
+						"type": "DatasetReference"
 					}
 				]
 			}
