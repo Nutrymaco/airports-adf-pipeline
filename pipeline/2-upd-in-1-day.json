@@ -516,11 +516,11 @@
 				}
 			},
 			{
-				"name": "CLEAR CURRENT PROCESS FROM OLD",
+				"name": "UNION AND CLEAR CURRENT PROCESS FROM OLD",
 				"type": "DataLakeAnalyticsU-SQL",
 				"dependsOn": [
 					{
-						"activity": "WRITE UPDATE",
+						"activity": "CREATE JOIN BY PART OF DAY",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -571,79 +571,6 @@
 					"referenceName": "AzureDataLakeAnalytics1",
 					"type": "LinkedServiceReference"
 				}
-			},
-			{
-				"name": "WRITE UPDATE",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "CREATE JOIN BY PART OF DAY",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureDataLakeStoreReadSettings",
-							"recursive": true
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureDataLakeStoreWriteSettings",
-							"copyBehavior": "MergeFiles"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
-					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "SetByPipelineNameAndStage",
-						"type": "DatasetReference",
-						"parameters": {
-							"stage": "process",
-							"pipeiineName": {
-								"value": "@variables('pipelineName')",
-								"type": "Expression"
-							},
-							"fileName": "joined_part_flights_tickets_airports_bookings"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "SetByPipelineNameAndStage",
-						"type": "DatasetReference",
-						"parameters": {
-							"stage": "process",
-							"pipeiineName": {
-								"value": "@variables('pipelineName')",
-								"type": "Expression"
-							},
-							"fileName": "joined_full_flights_tickets_airports_bookings"
-						}
-					}
-				]
 			},
 			{
 				"name": "COPY CURRENT REPORT TO RECYCLE",
@@ -998,7 +925,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "CLEAR CURRENT PROCESS FROM OLD",
+						"activity": "UNION AND CLEAR CURRENT PROCESS FROM OLD",
 						"dependencyConditions": [
 							"Succeeded"
 						]
