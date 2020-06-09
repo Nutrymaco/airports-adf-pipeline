@@ -846,7 +846,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "BookingsTable",
+						"referenceName": "AnyTable",
 						"type": "DatasetReference"
 					}
 				],
@@ -888,7 +888,7 @@
 					"source": {
 						"type": "AzurePostgreSqlSource",
 						"query": {
-							"value": "select distinct\n    t.ticket_no, t.book_ref, t.passenger_id, t.passenger_name,\n   t.contact_data->>'phone' as phone, t.contact_data->>'email' as email\nfrom bookings.tickets t\n    join bookings.ticket_flights tf on t.ticket_no = tf.ticket_no\n    join bookings.flights f on tf.flight_id = f.flight_id\nwhere\n    extract(year from f.scheduled_departure) = 2020\n        and\n    extract(month from f.scheduled_departure) = 1\n       and\n      EXTRACT(hour from scheduled_departure) < 1 * 24/2\n\tand\n      EXTRACT(hour from scheduled_departure) >= 0 * 24/2",
+							"value": "select distinct\n    t.ticket_no, t.book_ref, t.passenger_id, t.passenger_name,\n   t.contact_data->>'phone' as phone, t.contact_data->>'email' as email\nfrom bookings.tickets t",
 							"type": "Expression"
 						}
 					},
@@ -973,7 +973,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "TicketsTable",
+						"referenceName": "AnyTable",
 						"type": "DatasetReference"
 					}
 				],
