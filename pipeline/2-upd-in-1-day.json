@@ -1045,7 +1045,7 @@
 								"value": "@variables('pipelineName')",
 								"type": "Expression"
 							},
-							"fileName": "joined_part_flights_tickets_airports_bookings"
+							"fileName": "joined_full_flights_tickets_airports_bookings"
 						}
 					},
 					"fieldList": [
