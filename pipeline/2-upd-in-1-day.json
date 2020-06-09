@@ -285,7 +285,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "BookingsTable",
+						"referenceName": "TicketsFlightsTable",
 						"type": "DatasetReference"
 					}
 				],
@@ -846,7 +846,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "AnyTable",
+						"referenceName": "BookingsTable",
 						"type": "DatasetReference"
 					}
 				],
