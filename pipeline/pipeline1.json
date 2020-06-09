@@ -5,53 +5,37 @@
 			{
 				"name": "If Condition1",
 				"type": "IfCondition",
-				"dependsOn": [
-					{
-						"activity": "Validation1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@activity('Validation1').output",
+						"value": "@equals(variables('x'), '0')",
 						"type": "Expression"
 					},
 					"ifTrueActivities": [
 						{
-							"name": "Wait1",
-							"type": "Wait",
+							"name": "Set variable1",
+							"type": "SetVariable",
 							"dependsOn": [],
 							"userProperties": [],
 							"typeProperties": {
-								"waitTimeInSeconds": 1
+								"variableName": "x",
+								"value": {
+									"value": "@utcnow()",
+									"type": "Expression"
+								}
 							}
 						}
 					]
 				}
-			},
-			{
-				"name": "Validation1",
-				"type": "Validation",
-				"dependsOn": [],
-				"userProperties": [],
-				"typeProperties": {
-					"dataset": {
-						"referenceName": "SetByPipelineNameAndStage",
-						"type": "DatasetReference",
-						"parameters": {
-							"stage": "none",
-							"pipeiineName": "pipeline",
-							"fileName": "fileName"
-						}
-					},
-					"timeout": "7.00:00:00",
-					"sleep": 10
-				}
 			}
 		],
+		"variables": {
+			"x": {
+				"type": "String",
+				"defaultValue": "0"
+			}
+		},
 		"annotations": []
 	}
 }
