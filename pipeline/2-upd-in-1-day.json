@@ -95,7 +95,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Copy tickets",
+						"activity": "set variables",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -212,7 +212,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Copy tickets",
+						"activity": "set variables",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -309,7 +309,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Copy tickets",
+						"activity": "set variables",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -767,7 +767,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Copy tickets",
+						"activity": "set variables",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -882,7 +882,7 @@
 					"source": {
 						"type": "AzurePostgreSqlSource",
 						"query": {
-							"value": "select distinct\n    t.ticket_no, t.book_ref, t.passenger_id, t.passenger_name,\n   t.contact_data->>'phone' as phone, t.contact_data->>'email' as email\nfrom bookings.tickets t",
+							"value": "select\n    t.ticket_no, t.book_ref, t.passenger_id, t.passenger_name,\n   t.contact_data->>'phone' as phone, t.contact_data->>'email' as email\nfrom bookings.tickets t",
 							"type": "Expression"
 						}
 					},
