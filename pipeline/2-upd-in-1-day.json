@@ -1052,7 +1052,8 @@
 						"exists"
 					],
 					"storeSettings": {
-						"type": "AzureDataLakeStoreReadSettings"
+						"type": "AzureDataLakeStoreReadSettings",
+						"recursive": true
 					},
 					"formatSettings": {
 						"type": "DelimitedTextReadSettings"
@@ -1253,35 +1254,43 @@
 				"typeProperties": {
 					"waitTimeInSeconds": 1
 				}
+			},
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "CREATE NEW REPORT",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "prevDate",
+					"value": {
+						"value": "@variables('nowDate')",
+						"type": "Expression"
+					}
+				}
 			}
 		],
 		"variables": {
-			"year": {
-				"type": "String",
-				"defaultValue": "2020"
-			},
-			"month": {
-				"type": "String",
-				"defaultValue": "01"
-			},
-			"day": {
-				"type": "String",
-				"defaultValue": "01"
-			},
-			"part_of_day": {
-				"type": "String",
-				"defaultValue": "1"
-			},
-			"count_of_parts": {
-				"type": "String",
-				"defaultValue": "2"
-			},
 			"set_actual": {
 				"type": "Boolean"
 			},
 			"pipelineName": {
 				"type": "String",
 				"defaultValue": "popular_directions"
+			},
+			"nowDate": {
+				"type": "String",
+				"defaultValue": "2020-01-01 01:00:00"
+			},
+			"prevDate": {
+				"type": "String",
+				"defaultValue": "0"
 			}
 		},
 		"annotations": []
