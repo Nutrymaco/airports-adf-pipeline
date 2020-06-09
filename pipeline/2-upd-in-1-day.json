@@ -1197,11 +1197,11 @@
 			},
 			"day": {
 				"type": "String",
-				"defaultValue": "01"
+				"defaultValue": "02"
 			},
 			"part_of_day": {
 				"type": "String",
-				"defaultValue": "2"
+				"defaultValue": "1"
 			},
 			"count_of_parts": {
 				"type": "String",
