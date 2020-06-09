@@ -210,6 +210,27 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/test1')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 1,
+						"startTime": "2020-06-09T16:30:00.000Z",
+						"endTime": "2020-06-10T04:25:00.000Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/integrationRuntime1')]",
 			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
 			"apiVersion": "2018-06-01",
@@ -460,61 +481,6 @@
 						},
 						"folderPath": {
 							"value": "@concat(dataset().pipeiineName, '/', dataset().stage, '/')",
-							"type": "Expression"
-						}
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SetByYearAndMonth')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStore1",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"stage": {
-						"type": "string",
-						"defaultValue": "none"
-					},
-					"month": {
-						"type": "string",
-						"defaultValue": "01"
-					},
-					"year": {
-						"type": "string",
-						"defaultValue": "2020"
-					},
-					"fileName": {
-						"type": "string",
-						"defaultValue": "file"
-					},
-					"pipelineName": {
-						"type": "string",
-						"defaultValue": "pipeline"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureDataLakeStoreLocation",
-						"fileName": {
-							"value": "@concat(dataset().filename, '.csv')",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@concat(dataset().pipelineName, '/', dataset().stage, '/', dataset().year, '/', dataset().month, '/')",
 							"type": "Expression"
 						}
 					},
