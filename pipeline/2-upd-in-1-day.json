@@ -1101,6 +1101,15 @@
 				"typeProperties": {
 					"source": {
 						"type": "DelimitedTextSource",
+						"additionalColumns": [
+							{
+								"name": "agg_date",
+								"value": {
+									"value": "utcnow()",
+									"type": "Expression"
+								}
+							}
+						],
 						"storeSettings": {
 							"type": "AzureDataLakeStoreReadSettings",
 							"recursive": true
@@ -1114,7 +1123,33 @@
 						"writeBatchSize": 10000,
 						"writeBatchTimeout": "00:00:30"
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 1
+								},
+								"sink": {
+									"name": "city",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"type": "String",
+									"ordinal": 2
+								},
+								"sink": {
+									"name": "count_of_flights",
+									"type": "Int32"
+								}
+							},
+							null
+						]
+					}
 				},
 				"inputs": [
 					{
