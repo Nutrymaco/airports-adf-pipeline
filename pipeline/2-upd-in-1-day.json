@@ -1121,7 +1121,11 @@
 					"sink": {
 						"type": "AzurePostgreSQLSink",
 						"writeBatchSize": 10000,
-						"writeBatchTimeout": "00:00:30"
+						"writeBatchTimeout": "00:00:30",
+						"preCopyScript": {
+							"value": "delete from popular_directions",
+							"type": "Expression"
+						}
 					},
 					"enableStaging": false,
 					"translator": {
@@ -1197,7 +1201,7 @@
 			},
 			"part_of_day": {
 				"type": "String",
-				"defaultValue": "1"
+				"defaultValue": "2"
 			},
 			"count_of_parts": {
 				"type": "String",
