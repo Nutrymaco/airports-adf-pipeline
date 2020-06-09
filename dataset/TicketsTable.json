@@ -1,0 +1,16 @@
+{
+	"name": "TicketsTable",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzurePostgreSql1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzurePostgreSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "bookings",
+			"table": "tickets"
+		}
+	}
+}

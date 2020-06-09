@@ -972,7 +972,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "AnyTable",
+						"referenceName": "TicketsTable",
 						"type": "DatasetReference"
 					}
 				],
