@@ -6,7 +6,14 @@
 			{
 				"name": "set variables",
 				"type": "IfCondition",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "set trigger date",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
@@ -1239,6 +1246,19 @@
 					"variableName": "prevDate",
 					"value": {
 						"value": "@variables('nowDate')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "set trigger date",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "nowDate",
+					"value": {
+						"value": "@utcnow()",
 						"type": "Expression"
 					}
 				}
