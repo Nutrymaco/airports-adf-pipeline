@@ -1,35 +1,6 @@
 {
 	"name": "pipeline1",
 	"properties": {
-		"activities": [
-			{
-				"name": "If Condition1",
-				"type": "IfCondition",
-				"dependsOn": [],
-				"userProperties": [],
-				"typeProperties": {
-					"expression": {
-						"value": "@equals(variables('x'), '0')",
-						"type": "Expression"
-					},
-					"ifTrueActivities": [
-						{
-							"name": "Set variable1",
-							"type": "SetVariable",
-							"dependsOn": [],
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "x",
-								"value": {
-									"value": "@utcnow()",
-									"type": "Expression"
-								}
-							}
-						}
-					]
-				}
-			}
-		],
 		"variables": {
 			"x": {
 				"type": "String",
