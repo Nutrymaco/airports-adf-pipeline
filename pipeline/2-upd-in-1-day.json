@@ -476,103 +476,6 @@
 				}
 			},
 			{
-				"name": "Wait1",
-				"type": "Wait",
-				"dependsOn": [
-					{
-						"activity": "copy flights",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "copy ticket_flights",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "copy airports",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Copy bookings",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Copy tickets",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"waitTimeInSeconds": 1
-				}
-			},
-			{
-				"name": "UNION AND CLEAR CURRENT PROCESS FROM OLD",
-				"type": "DataLakeAnalyticsU-SQL",
-				"dependsOn": [
-					{
-						"activity": "CREATE JOIN BY PART OF DAY",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"scriptPath": "scripts/2_in_1_clear_from_old.usql",
-					"scriptLinkedService": {
-						"referenceName": "AzureDataLakeStore1",
-						"type": "LinkedServiceReference"
-					},
-					"parameters": {
-						"pipelineName": {
-							"value": "@variables('pipelineName')",
-							"type": "Expression"
-						},
-						"year": {
-							"value": "@variables('year')",
-							"type": "Expression"
-						},
-						"month": {
-							"value": "@variables('month')",
-							"type": "Expression"
-						},
-						"day": {
-							"value": "@variables('day')",
-							"type": "Expression"
-						},
-						"part_of_day": {
-							"value": "@variables('part_of_day')",
-							"type": "Expression"
-						},
-						"count_of_parts": {
-							"value": "@variables('count_of_parts')",
-							"type": "Expression"
-						}
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeAnalytics1",
-					"type": "LinkedServiceReference"
-				}
-			},
-			{
 				"name": "COPY CURRENT REPORT TO RECYCLE",
 				"type": "Copy",
 				"dependsOn": [
@@ -925,7 +828,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "UNION AND CLEAR CURRENT PROCESS FROM OLD",
+						"activity": "FULL EXISTS",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -982,7 +885,7 @@
 						"referenceName": "SetByYearAndMonthAndDay",
 						"type": "DatasetReference",
 						"parameters": {
-							"stage": "process/ recycle",
+							"stage": "process/recycle",
 							"day": {
 								"value": "@variables('day')",
 								"type": "Expression"
@@ -1112,6 +1015,230 @@
 						"type": "DatasetReference"
 					}
 				]
+			},
+			{
+				"name": "CHECK FULL",
+				"type": "GetMetadata",
+				"dependsOn": [
+					{
+						"activity": "CREATE JOIN BY PART OF DAY",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "SetByPipelineNameAndStage",
+						"type": "DatasetReference",
+						"parameters": {
+							"stage": "process",
+							"pipeiineName": {
+								"value": "@variables('pipelineName')",
+								"type": "Expression"
+							},
+							"fileName": "joined_part_flights_tickets_airports_bookings"
+						}
+					},
+					"fieldList": [],
+					"storeSettings": {
+						"type": "AzureDataLakeStoreReadSettings"
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "FULL EXISTS",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "CHECK FULL",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@activity('CHECK FULL').output.exists",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "WRITE PART TO FULL",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureDataLakeStoreReadSettings",
+										"recursive": true
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureDataLakeStoreWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "SetByPipelineNameAndStage",
+									"type": "DatasetReference",
+									"parameters": {
+										"stage": "process",
+										"pipeiineName": {
+											"value": "@variables('pipelineName')",
+											"type": "Expression"
+										},
+										"fileName": "joined_part_flights_tickets_airports_bookings"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "SetByPipelineNameAndStage",
+									"type": "DatasetReference",
+									"parameters": {
+										"stage": "process",
+										"pipeiineName": {
+											"value": "@variables('pipelineName')",
+											"type": "Expression"
+										},
+										"fileName": "joined_full_flights_tickets_airports_bookings"
+									}
+								}
+							]
+						}
+					],
+					"ifTrueActivities": [
+						{
+							"name": "UNION FULL AND PART",
+							"type": "DataLakeAnalyticsU-SQL",
+							"dependsOn": [
+								{
+									"activity": "CLEAR FULL FROM OLD",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"scriptPath": "scripts/popular_directions_union.usql",
+								"scriptLinkedService": {
+									"referenceName": "AzureDataLakeStore1",
+									"type": "LinkedServiceReference"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDataLakeAnalytics1",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "CLEAR FULL FROM OLD",
+							"type": "DataLakeAnalyticsU-SQL",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"scriptPath": "scripts/2_in_1_clear_from_old.usql",
+								"scriptLinkedService": {
+									"referenceName": "AzureDataLakeStore1",
+									"type": "LinkedServiceReference"
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "AzureDataLakeAnalytics1",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "Wait1",
+				"type": "Wait",
+				"dependsOn": [
+					{
+						"activity": "copy flights",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "copy ticket_flights",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "copy airports",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy bookings",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "Copy tickets",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"waitTimeInSeconds": 1
+				}
 			}
 		],
 		"variables": {
