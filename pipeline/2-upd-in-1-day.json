@@ -95,7 +95,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "set variables",
+						"activity": "Copy tickets",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -212,7 +212,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "set variables",
+						"activity": "Copy tickets",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -309,7 +309,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "set variables",
+						"activity": "Copy tickets",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -499,12 +499,6 @@
 					},
 					{
 						"activity": "Copy bookings",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					},
-					{
-						"activity": "Copy tickets",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -773,7 +767,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "set variables",
+						"activity": "Copy tickets",
 						"dependencyConditions": [
 							"Succeeded"
 						]
