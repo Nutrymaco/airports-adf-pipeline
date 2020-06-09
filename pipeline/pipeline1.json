@@ -3,45 +3,11 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Lookup1",
-				"type": "Lookup",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureDataLakeStoreReadSettings",
-							"recursive": true
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"dataset": {
-						"referenceName": "SetByPipelineNameAndStage",
-						"type": "DatasetReference",
-						"parameters": {
-							"stage": "none",
-							"pipeiineName": "pipeline",
-							"fileName": "fileName"
-						}
-					}
-				}
-			},
-			{
 				"name": "If Condition1",
 				"type": "IfCondition",
 				"dependsOn": [
 					{
-						"activity": "Lookup1",
+						"activity": "Validation1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -50,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@activity('Lookup1').output",
+						"value": "@activity('Validation1').output",
 						"type": "Expression"
 					},
 					"ifTrueActivities": [
@@ -64,6 +30,25 @@
 							}
 						}
 					]
+				}
+			},
+			{
+				"name": "Validation1",
+				"type": "Validation",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "SetByPipelineNameAndStage",
+						"type": "DatasetReference",
+						"parameters": {
+							"stage": "none",
+							"pipeiineName": "pipeline",
+							"fileName": "fileName"
+						}
+					},
+					"timeout": "7.00:00:00",
+					"sleep": 10
 				}
 			}
 		],
