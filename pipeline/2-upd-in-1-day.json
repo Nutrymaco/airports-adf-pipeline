@@ -1168,6 +1168,12 @@
 								"scriptLinkedService": {
 									"referenceName": "AzureDataLakeStore1",
 									"type": "LinkedServiceReference"
+								},
+								"parameters": {
+									"pipelineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									}
 								}
 							},
 							"linkedServiceName": {
@@ -1192,6 +1198,12 @@
 								"scriptLinkedService": {
 									"referenceName": "AzureDataLakeStore1",
 									"type": "LinkedServiceReference"
+								},
+								"parameters": {
+									"pipelineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									}
 								}
 							},
 							"linkedServiceName": {
