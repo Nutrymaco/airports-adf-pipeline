@@ -65,6 +65,35 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/day half')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2020-06-10T15:03:00.000Z",
+						"endTime": "2020-06-13T15:03:00.000Z",
+						"timeZone": "UTC",
+						"schedule": {
+							"minutes": [
+								0
+							],
+							"hours": [
+								12
+							]
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/2-upd-in-1-day')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -72,98 +101,11 @@
 				"description": "most popular directions in 24 hours updated 2 times in 24 hours",
 				"activities": [
 					{
-						"name": "set variables",
-						"type": "IfCondition",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@variables('set_actual')",
-								"type": "Expression"
-							},
-							"ifTrueActivities": [
-								{
-									"name": "Set year",
-									"type": "SetVariable",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "year",
-										"value": {
-											"value": "@formatDateTime(utcnow(), 'yyyy')",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "Set month",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "Set year",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "month",
-										"value": {
-											"value": "@formatDateTime(utcnow(), 'MM')",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "Set day",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "Set month",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "day",
-										"value": {
-											"value": "@formatDateTime(utcnow(), 'dd')",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "Set part of day",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "Set day",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "part_of_day",
-										"value": {
-											"value": "@string(int(div(int(formatDateTime(utcNow(), 'hh')),\ndiv(24, int(variables('count_of_parts')))\n)))",
-											"type": "Expression"
-										}
-									}
-								}
-							]
-						}
-					},
-					{
 						"name": "copy flights",
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "set variables",
+								"activity": "ITS YOUR FIRST TIME",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -281,7 +223,7 @@
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "set variables",
+								"activity": "ITS YOUR FIRST TIME",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -379,7 +321,7 @@
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "set variables",
+								"activity": "ITS YOUR FIRST TIME",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -519,24 +461,12 @@
 									"value": "@variables('pipelineName')",
 									"type": "Expression"
 								},
-								"year": {
-									"value": "@variables('year')",
+								"nowDate": {
+									"value": "@variables('nowDate')",
 									"type": "Expression"
 								},
-								"month": {
-									"value": "@variables('month')",
-									"type": "Expression"
-								},
-								"day": {
-									"value": "@variables('day')",
-									"type": "Expression"
-								},
-								"part_of_day": {
-									"value": "@variables('part_of_day')",
-									"type": "Expression"
-								},
-								"count_of_parts": {
-									"value": "@variables('count_of_parts')",
+								"prevDate": {
+									"value": "@variables('prevDate')",
 									"type": "Expression"
 								}
 							}
@@ -610,21 +540,18 @@
 								"parameters": {
 									"stage": "output/recycle",
 									"day": {
-										"value": "@variables('day')",
+										"value": "@formatDateTime(variables('nowDate'), 'dd')",
 										"type": "Expression"
 									},
 									"month": {
-										"value": "@variables('month')",
+										"value": "@formatDateTime(variables('nowDate'), 'MM')",
 										"type": "Expression"
 									},
 									"year": {
-										"value": "@variables('year')",
+										"value": "@formatDateTime(variables('nowDate'), 'yyyy')",
 										"type": "Expression"
 									},
-									"fileName": {
-										"value": "@concat('popular_directions_report(', \nstring(int(variables('part_of_day'))), '-', variables('count_of_parts'), ')')",
-										"type": "Expression"
-									},
+									"fileName": "joined_full_flights_tickets_airports_bookings",
 									"pipelineName": {
 										"value": "@variables('pipelineName')",
 										"type": "Expression"
@@ -675,7 +602,7 @@
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "set variables",
+								"activity": "ITS YOUR FIRST TIME",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -773,7 +700,7 @@
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "set variables",
+								"activity": "ITS YOUR FIRST TIME",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -960,21 +887,18 @@
 								"parameters": {
 									"stage": "process/recycle",
 									"day": {
-										"value": "@variables('day')",
+										"value": "@formatDateTime(variables('nowDate'), 'dd')",
 										"type": "Expression"
 									},
 									"month": {
-										"value": "@variables('month')",
+										"value": "@formatDateTime(variables('nowDate'), 'MM')",
 										"type": "Expression"
 									},
 									"year": {
-										"value": "@variables('year')",
+										"value": "@formatDateTime(variables('nowDate'), 'yyyy')",
 										"type": "Expression"
 									},
-									"fileName": {
-										"value": "@concat('join_flights_tickets_airports_(', \nstring(int(variables('part_of_day'))), '-', variables('count_of_parts'), ')')",
-										"type": "Expression"
-									},
+									"fileName": "joined_part_flights_tickets_airports_bookings",
 									"pipelineName": {
 										"value": "@variables('pipelineName')",
 										"type": "Expression"
@@ -1222,14 +1146,7 @@
 								{
 									"name": "UNION FULL AND PART",
 									"type": "DataLakeAnalyticsU-SQL",
-									"dependsOn": [
-										{
-											"activity": "CLEAR FULL FROM OLD",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
+									"dependsOn": [],
 									"policy": {
 										"timeout": "7.00:00:00",
 										"retry": 0,
@@ -1259,7 +1176,14 @@
 								{
 									"name": "CLEAR FULL FROM OLD",
 									"type": "DataLakeAnalyticsU-SQL",
-									"dependsOn": [],
+									"dependsOn": [
+										{
+											"activity": "UNION FULL AND PART",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
 									"policy": {
 										"timeout": "7.00:00:00",
 										"retry": 0,
@@ -1277,6 +1201,18 @@
 										"parameters": {
 											"pipelineName": {
 												"value": "@variables('pipelineName')",
+												"type": "Expression"
+											},
+											"nowDate": {
+												"value": "@variables('nowDate')",
+												"type": "Expression"
+											},
+											"prevDate": {
+												"value": "@variables('prevDate')",
+												"type": "Expression"
+											},
+											"length_of_cycle": {
+												"value": "@variables('length_of_cycle')",
 												"type": "Expression"
 											}
 										}
@@ -1328,35 +1264,94 @@
 						"typeProperties": {
 							"waitTimeInSeconds": 1
 						}
+					},
+					{
+						"name": "Set variable1",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "CREATE NEW REPORT",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "prevDate",
+							"value": {
+								"value": "@variables('nowDate')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "SET TRIGGER DATE",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "nowDate",
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "ITS YOUR FIRST TIME",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "SET TRIGGER DATE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@equals(variables('prevDate'), '0')",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "Set prev now-cycle_length",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "prevDate",
+										"value": {
+											"value": "@addHours(variables('nowDate'), mul(int(variables('length_of_cycle')), -1))",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
 					}
 				],
 				"variables": {
-					"year": {
-						"type": "String",
-						"defaultValue": "2020"
-					},
-					"month": {
-						"type": "String",
-						"defaultValue": "01"
-					},
-					"day": {
-						"type": "String",
-						"defaultValue": "01"
-					},
-					"part_of_day": {
-						"type": "String",
-						"defaultValue": "1"
-					},
-					"count_of_parts": {
-						"type": "String",
-						"defaultValue": "2"
-					},
 					"set_actual": {
 						"type": "Boolean"
 					},
 					"pipelineName": {
 						"type": "String",
 						"defaultValue": "popular_directions"
+					},
+					"nowDate": {
+						"type": "String",
+						"defaultValue": "2020-01-01 01:00:00"
+					},
+					"prevDate": {
+						"type": "String",
+						"defaultValue": "0"
+					},
+					"length_of_cycle": {
+						"type": "String",
+						"defaultValue": "24"
 					}
 				},
 				"annotations": []
@@ -3311,21 +3306,17 @@
 						"userProperties": [],
 						"typeProperties": {
 							"expression": {
-								"value": "@equals(variables('x'), '0')",
+								"value": "@equals(variables('x'), '1')",
 								"type": "Expression"
 							},
 							"ifTrueActivities": [
 								{
-									"name": "Set variable1",
-									"type": "SetVariable",
+									"name": "Wait1",
+									"type": "Wait",
 									"dependsOn": [],
 									"userProperties": [],
 									"typeProperties": {
-										"variableName": "x",
-										"value": {
-											"value": "@utcnow()",
-											"type": "Expression"
-										}
+										"waitTimeInSeconds": 1
 									}
 								}
 							]
