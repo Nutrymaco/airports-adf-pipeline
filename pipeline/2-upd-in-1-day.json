@@ -1125,7 +1125,7 @@
 			},
 			"day": {
 				"type": "String",
-				"defaultValue": "02"
+				"defaultValue": "01"
 			},
 			"part_of_day": {
 				"type": "String",
