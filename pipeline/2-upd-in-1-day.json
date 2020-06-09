@@ -720,7 +720,7 @@
 								"type": "Expression"
 							},
 							"fileName": {
-								"value": "@concat('popular_directions_report(', \nstring(int(variables('part_of_day'))), '/', variables('count_of_parts'), ')')",
+								"value": "@concat('popular_directions_report(', \nstring(int(variables('part_of_day'))), '-', variables('count_of_parts'), ')')",
 								"type": "Expression"
 							},
 							"pipelineName": {
@@ -1068,7 +1068,7 @@
 								"type": "Expression"
 							},
 							"fileName": {
-								"value": "@concat('join_flights_tickets_airports_(', \nstring(int(variables('part_of_day'))), ' \\/', variables('count_of_parts'), ')')",
+								"value": "@concat('join_flights_tickets_airports_(', \nstring(int(variables('part_of_day'))), '-', variables('count_of_parts'), ')')",
 								"type": "Expression"
 							},
 							"pipelineName": {
