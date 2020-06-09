@@ -1105,7 +1105,7 @@
 							{
 								"name": "agg_date",
 								"value": {
-									"value": "utcnow()",
+									"value": "formatDateTime(utcnow())",
 									"type": "Expression"
 								}
 							}
@@ -1147,7 +1147,16 @@
 									"type": "Int32"
 								}
 							},
-							null
+							{
+								"source": {
+									"name": "agg_date",
+									"type": "String"
+								},
+								"sink": {
+									"name": "agg_date",
+									"type": "DateTime"
+								}
+							}
 						]
 					}
 				},
