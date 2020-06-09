@@ -538,22 +538,6 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"stage": "output/recycle",
-							"day": {
-								"value": "@variables('day')",
-								"type": "Expression"
-							},
-							"month": {
-								"value": "@variables('month')",
-								"type": "Expression"
-							},
-							"year": {
-								"value": "@variables('year')",
-								"type": "Expression"
-							},
-							"fileName": {
-								"value": "@concat('popular_directions_report(', \nstring(int(variables('part_of_day'))), '-', variables('count_of_parts'), ')')",
-								"type": "Expression"
-							},
 							"pipelineName": {
 								"value": "@variables('pipelineName')",
 								"type": "Expression"
@@ -886,22 +870,6 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"stage": "process/recycle",
-							"day": {
-								"value": "@variables('day')",
-								"type": "Expression"
-							},
-							"month": {
-								"value": "@variables('month')",
-								"type": "Expression"
-							},
-							"year": {
-								"value": "@variables('year')",
-								"type": "Expression"
-							},
-							"fileName": {
-								"value": "@concat('join_flights_tickets_airports_(', \nstring(int(variables('part_of_day'))), '-', variables('count_of_parts'), ')')",
-								"type": "Expression"
-							},
 							"pipelineName": {
 								"value": "@variables('pipelineName')",
 								"type": "Expression"
