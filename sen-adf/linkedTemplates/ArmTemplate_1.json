@@ -2445,7 +2445,8 @@
 						"defaultValue": "2020"
 					},
 					"actual": {
-						"type": "Boolean"
+						"type": "Boolean",
+						"defaultValue": true
 					},
 					"pipelineName": {
 						"type": "String",
@@ -3314,6 +3315,38 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/2-upd-in-1-day')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/NIGHT')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "day-by-day pipeline",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2020-06-10T01:00:00.000Z",
+						"endTime": "2020-06-13T16:41:00.000Z",
+						"timeZone": "UTC",
+						"schedule": {}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/day-by-day pipeline')]"
 			]
 		}
 	]

@@ -1,0 +1,1123 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "sen-adf"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/day-by-day pipeline')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "copy flights",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "set actual",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": {
+									"value": "select * from bookings.flights\nwhere EXTRACT(year from scheduled_departure) = @{variables('year')}\n        and\n      EXTRACT(month from scheduled_departure) = @{variables('month')}\n        and\n      EXTRACT(day from scheduled_departure) = @{variables('day')};",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 2,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "flight_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 1
+										}
+									},
+									{
+										"source": {
+											"name": "scheduled_departure",
+											"type": "DateTime"
+										},
+										"sink": {
+											"type": "DateTime",
+											"ordinal": 2
+										}
+									},
+									{
+										"source": {
+											"name": "actual_departure",
+											"type": "DateTime"
+										},
+										"sink": {
+											"type": "DateTime",
+											"ordinal": 3
+										}
+									},
+									{
+										"source": {
+											"name": "departure_airport",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 4
+										}
+									},
+									{
+										"source": {
+											"name": "arrival_airport",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 5
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "FlightsTable",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SetByYearAndMonthAndDay",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "raw",
+									"day": {
+										"value": "@variables('day')",
+										"type": "Expression"
+									},
+									"month": {
+										"value": "@variables('month')",
+										"type": "Expression"
+									},
+									"year": {
+										"value": "@variables('year')",
+										"type": "Expression"
+									},
+									"fileName": "flights",
+									"pipelineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "copy ticket_flights",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "set actual",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": {
+									"value": "select t.ticket_no, t.flight_id, t.amount from bookings.ticket_flights t\njoin bookings.flights f on t.flight_id = f.flight_id\nwhere EXTRACT(year from scheduled_departure) = @{variables('year')}\n        and\n      EXTRACT(month from scheduled_departure) = @{variables('month')}\n       and\n      EXTRACT(day from scheduled_departure) = @{variables('day')}",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 2,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ticket_no",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 1
+										}
+									},
+									{
+										"source": {
+											"name": "flight_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"type": "Int32",
+											"ordinal": 2
+										}
+									},
+									{
+										"source": {
+											"name": "amount",
+											"type": "Decimal"
+										},
+										"sink": {
+											"type": "Decimal",
+											"ordinal": 3
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "BookingsTable",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SetByYearAndMonthAndDay",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "raw",
+									"day": {
+										"value": "@variables('day')",
+										"type": "Expression"
+									},
+									"month": {
+										"value": "@variables('month')",
+										"type": "Expression"
+									},
+									"year": {
+										"value": "@variables('year')",
+										"type": "Expression"
+									},
+									"fileName": "ticket_flights",
+									"pipelineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "copy airports",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "set actual",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": "SELECT \n  airport_code, \n  airport_name,\n  city, \n  longitude AS x, \n  latitude AS y\nFROM bookings.airports\n  "
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 2,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "airport_code",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 1
+										}
+									},
+									{
+										"source": {
+											"name": "airport_name",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 2
+										}
+									},
+									{
+										"source": {
+											"name": "city",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 3
+										}
+									},
+									{
+										"source": {
+											"name": "x",
+											"type": "Double"
+										},
+										"sink": {
+											"type": "Decimal",
+											"ordinal": 4
+										}
+									},
+									{
+										"source": {
+											"name": "y",
+											"type": "Double"
+										},
+										"sink": {
+											"type": "Decimal",
+											"ordinal": 5
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AirportsTable",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SetByYearAndMonthAndDay",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "raw",
+									"day": {
+										"value": "@variables('day')",
+										"type": "Expression"
+									},
+									"month": {
+										"value": "@variables('month')",
+										"type": "Expression"
+									},
+									"year": {
+										"value": "@variables('year')",
+										"type": "Expression"
+									},
+									"fileName": "airports",
+									"pipelineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					},
+					{
+						"name": "BIG JOIN",
+						"type": "DataLakeAnalyticsU-SQL",
+						"dependsOn": [
+							{
+								"activity": "Wait1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"scriptPath": "scripts/join.usql",
+							"scriptLinkedService": {
+								"referenceName": "AzureDataLakeStore1",
+								"type": "LinkedServiceReference"
+							},
+							"parameters": {
+								"day": {
+									"value": "@variables('day')",
+									"type": "Expression"
+								},
+								"month": {
+									"value": "@variables('month')",
+									"type": "Expression"
+								},
+								"year": {
+									"value": "@variables('year')",
+									"type": "Expression"
+								},
+								"pipelineName": {
+									"value": "@variables('pipelineName')",
+									"type": "Expression"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDataLakeAnalytics1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "AGG REPORT ABOUT AMOUNTS",
+						"type": "DataLakeAnalyticsU-SQL",
+						"dependsOn": [
+							{
+								"activity": "BIG JOIN",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"scriptPath": "scripts/amount_agg.usql",
+							"scriptLinkedService": {
+								"referenceName": "AzureDataLakeStore1",
+								"type": "LinkedServiceReference"
+							},
+							"parameters": {
+								"day": {
+									"value": "@variables('day')",
+									"type": "Expression"
+								},
+								"month": {
+									"value": "@variables('month')",
+									"type": "Expression"
+								},
+								"year": {
+									"value": "@variables('year')",
+									"type": "Expression"
+								},
+								"pipelineName": {
+									"value": "@variables('pipelineName')",
+									"type": "Expression"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDataLakeAnalytics1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "JOIN FLIGHTS AND AIRPORTS",
+						"type": "DataLakeAnalyticsU-SQL",
+						"dependsOn": [
+							{
+								"activity": "Wait1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"scriptPath": "scripts/join_flight_and_airports.usql",
+							"scriptLinkedService": {
+								"referenceName": "AzureDataLakeStore1",
+								"type": "LinkedServiceReference"
+							},
+							"parameters": {
+								"day": {
+									"value": "@variables('day')",
+									"type": "Expression"
+								},
+								"month": {
+									"value": "@variables('month')",
+									"type": "Expression"
+								},
+								"year": {
+									"value": "@variables('year')",
+									"type": "Expression"
+								},
+								"pipelineName": {
+									"value": "@variables('pipelineName')",
+									"type": "Expression"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDataLakeAnalytics1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "AGG REPORT ABOUT LATENCY",
+						"type": "DataLakeAnalyticsU-SQL",
+						"dependsOn": [
+							{
+								"activity": "JOIN FLIGHTS AND AIRPORTS",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"scriptPath": "scripts/flights_latency_report.usql",
+							"scriptLinkedService": {
+								"referenceName": "AzureDataLakeStore1",
+								"type": "LinkedServiceReference"
+							},
+							"parameters": {
+								"day": {
+									"value": "@variables('day')",
+									"type": "Expression"
+								},
+								"month": {
+									"value": "@variables('month')",
+									"type": "Expression"
+								},
+								"year": {
+									"value": "@variables('year')",
+									"type": "Expression"
+								},
+								"pipelineName": {
+									"value": "@variables('pipelineName')",
+									"type": "Expression"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDataLakeAnalytics1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "COPY AMOUNT REPORT_copy1",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "AGG REPORT ABOUT AMOUNTS",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"additionalColumns": [
+									{
+										"name": "agg_date",
+										"value": {
+											"value": "@concat(variables('year'), '-', variables('month'), '-', variables('day'))",
+											"type": "Expression"
+										}
+									}
+								],
+								"storeSettings": {
+									"type": "AzureDataLakeStoreReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzurePostgreSQLSink",
+								"writeBatchSize": 10000,
+								"writeBatchTimeout": "00:00:30",
+								"preCopyScript": {
+									"value": "DELETE FROM flight_amount\nWHERE  extract(year from agg_date) = @{int(variables('year'))}\nAND\n    extract(month from agg_date) = @{int(variables('month'))}\n    AND\n    extract(day from agg_date) = @{int(variables('day'))}",
+									"type": "Expression"
+								}
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 2,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 1
+										},
+										"sink": {
+											"name": "departure_airport_code",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 2
+										},
+										"sink": {
+											"name": "arrival_airport_code",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 3
+										},
+										"sink": {
+											"name": "departure_airport",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 4
+										},
+										"sink": {
+											"name": "arrival_airport",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 5
+										},
+										"sink": {
+											"name": "departure_city",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 6
+										},
+										"sink": {
+											"name": "arrival_city",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 7
+										},
+										"sink": {
+											"name": "departure_airport_x",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 8
+										},
+										"sink": {
+											"name": "departure_airport_y",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 9
+										},
+										"sink": {
+											"name": "arrival_airport_x",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 10
+										},
+										"sink": {
+											"name": "arrival_airport_y",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 11
+										},
+										"sink": {
+											"name": "avg_amount",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 12
+										},
+										"sink": {
+											"name": "tickets_count",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 13
+										},
+										"sink": {
+											"name": "sum_amount",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"name": "agg_date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "agg_date",
+											"type": "DateTime"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SetByYearAndMonthAndDay",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "output",
+									"day": {
+										"value": "@variables('day')",
+										"type": "Expression"
+									},
+									"month": {
+										"value": "@variables('month')",
+										"type": "Expression"
+									},
+									"year": {
+										"value": "@variables('year')",
+										"type": "Expression"
+									},
+									"fileName": "flights_amount_report",
+									"pipelineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "GOSHA_AMOUNTS",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "COPY LATENCY REPORT",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "AGG REPORT ABOUT LATENCY",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"additionalColumns": [
+									{
+										"name": "agg_date",
+										"value": {
+											"value": "@concat(variables('year'), '-', variables('month'), '-', variables('day'))",
+											"type": "Expression"
+										}
+									}
+								],
+								"storeSettings": {
+									"type": "AzureDataLakeStoreReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzurePostgreSQLSink",
+								"writeBatchSize": 10000,
+								"writeBatchTimeout": "00:00:30",
+								"preCopyScript": {
+									"value": "DELETE FROM flight_latency\nWHERE  extract(year from agg_date) = @{int(variables('year'))}\nAND\n    extract(month from agg_date) = @{int(variables('month'))}\n    AND\n    extract(day from agg_date) = @{int(variables('day'))}",
+									"type": "Expression"
+								}
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 2,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 1
+										},
+										"sink": {
+											"name": "departure_airport",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 2
+										},
+										"sink": {
+											"name": "departure_airport_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 3
+										},
+										"sink": {
+											"name": "departure_city_name",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 4
+										},
+										"sink": {
+											"name": "longitude",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 5
+										},
+										"sink": {
+											"name": "latitude",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 6
+										},
+										"sink": {
+											"name": "avg_latency",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "agg_date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "agg_date",
+											"type": "DateTime"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SetByYearAndMonthAndDay",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "output",
+									"day": {
+										"value": "@variables('day')",
+										"type": "Expression"
+									},
+									"month": {
+										"value": "@variables('month')",
+										"type": "Expression"
+									},
+									"year": {
+										"value": "@variables('year')",
+										"type": "Expression"
+									},
+									"fileName": "flights_latency_report",
+									"pipelineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "GOSHA_LATENCY",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "set actual",
+						"type": "IfCondition",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@variables('actual')",
+								"type": "Expression"
+							},
+							"ifTrueActivities": [
+								{
+									"name": "set year",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "year",
+										"value": {
+											"value": "@formatDateTime(addDays(utcnow(), -1), 'yyyy')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "set month",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "set year",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "month",
+										"value": {
+											"value": "@formatDateTime(addDays(utcnow(), -1), 'MM')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "set day",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "set month",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "day",
+										"value": {
+											"value": "@formatDateTime(addDays(utcnow(), -1), 'dd')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Wait1",
+						"description": "",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "copy flights",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "copy ticket_flights",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "copy airports",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					}
+				],
+				"variables": {
+					"day": {
+						"type": "String",
+						"defaultValue": "14"
+					},
+					"month": {
+						"type": "String",
+						"defaultValue": "06"
+					},
+					"year": {
+						"type": "String",
+						"defaultValue": "2020"
+					},
+					"actual": {
+						"type": "Boolean",
+						"defaultValue": true
+					},
+					"pipelineName": {
+						"type": "String",
+						"defaultValue": "day_amounts_and_latency"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/NIGHT')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "day-by-day pipeline",
+							"type": "PipelineReference"
+						}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2020-06-10T01:00:00.000Z",
+						"endTime": "2020-06-13T16:41:00.000Z",
+						"timeZone": "UTC"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/day-by-day pipeline')]"
+			]
+		}
+	]
+}
