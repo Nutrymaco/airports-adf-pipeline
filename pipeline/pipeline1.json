@@ -46,7 +46,7 @@
 		"variables": {
 			"x": {
 				"type": "String",
-				"defaultValue": "0"
+				"defaultValue": "1"
 			}
 		},
 		"annotations": []
