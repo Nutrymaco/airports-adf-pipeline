@@ -1389,7 +1389,7 @@
 						"typeProperties": {
 							"variableName": "prevDate",
 							"value": {
-								"value": "@addHours(variables('nowDate'), variables('period_time'))",
+								"value": "@addHours(variables('nowDate'), int(variables('period_time')))",
 								"type": "Expression"
 							}
 						}
