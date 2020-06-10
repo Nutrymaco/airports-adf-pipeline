@@ -3278,7 +3278,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"expression": {
-								"value": "@equals(variables('x'), '1')",
+								"value": "@equals(variables('x'), '0')",
 								"type": "Expression"
 							},
 							"ifTrueActivities": [
@@ -3289,6 +3289,23 @@
 									"userProperties": [],
 									"typeProperties": {
 										"waitTimeInSeconds": 1
+									}
+								},
+								{
+									"name": "Set variable1",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Wait1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "x",
+										"value": "1"
 									}
 								}
 							]
@@ -3852,6 +3869,37 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/2-upd-in-1-day')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TUMB_MINUTE')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipeline": {
+					"pipelineReference": {
+						"referenceName": "pipeline1",
+						"type": "PipelineReference"
+					},
+					"parameters": {}
+				},
+				"type": "TumblingWindowTrigger",
+				"typeProperties": {
+					"frequency": "Minute",
+					"interval": 5,
+					"startTime": "2020-06-10T04:35:00.000Z",
+					"delay": "00:00:00",
+					"maxConcurrency": 50,
+					"retryPolicy": {
+						"intervalInSeconds": 30
+					},
+					"dependsOn": []
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pipeline1')]"
 			]
 		},
 		{
