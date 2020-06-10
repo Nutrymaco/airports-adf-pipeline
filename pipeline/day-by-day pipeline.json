@@ -1062,7 +1062,7 @@
 			},
 			"actual": {
 				"type": "Boolean",
-				"defaultValue": false
+				"defaultValue": true
 			},
 			"pipelineName": {
 				"type": "String",
