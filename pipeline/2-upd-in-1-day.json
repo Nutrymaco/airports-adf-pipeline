@@ -806,7 +806,7 @@
 				]
 			},
 			{
-				"name": "Copy data1",
+				"name": "COPY TO GOSHA_DB",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -1160,26 +1160,6 @@
 				"userProperties": [],
 				"typeProperties": {
 					"waitTimeInSeconds": 1
-				}
-			},
-			{
-				"name": "Set variable1",
-				"type": "SetVariable",
-				"dependsOn": [
-					{
-						"activity": "CREATE NEW REPORT",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"variableName": "prevDate",
-					"value": {
-						"value": "@variables('nowDate')",
-						"type": "Expression"
-					}
 				}
 			},
 			{
