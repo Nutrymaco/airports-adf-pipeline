@@ -2,7 +2,7 @@
 	"name": "TUMBLERON",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Started",
+		"runtimeState": "Stopped",
 		"pipeline": {
 			"pipelineReference": {
 				"referenceName": "2-upd-in-1-day",
