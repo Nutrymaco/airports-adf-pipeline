@@ -201,7 +201,7 @@
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "ITS YOUR FIRST TIME",
+								"activity": "SET PREV DATE",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -319,7 +319,7 @@
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "ITS YOUR FIRST TIME",
+								"activity": "SET PREV DATE",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -417,7 +417,7 @@
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "ITS YOUR FIRST TIME",
+								"activity": "SET PREV DATE",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -698,7 +698,7 @@
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "ITS YOUR FIRST TIME",
+								"activity": "SET PREV DATE",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -796,7 +796,7 @@
 						"type": "Copy",
 						"dependsOn": [
 							{
-								"activity": "ITS YOUR FIRST TIME",
+								"activity": "SET PREV DATE",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -1004,7 +1004,7 @@
 						]
 					},
 					{
-						"name": "Copy data1",
+						"name": "COPY TO GOSHA_DB",
 						"type": "Copy",
 						"dependsOn": [
 							{
@@ -1362,26 +1362,6 @@
 						}
 					},
 					{
-						"name": "Set variable1",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "CREATE NEW REPORT",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "prevDate",
-							"value": {
-								"value": "@variables('nowDate')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
 						"name": "SET TRIGGER DATE",
 						"type": "SetVariable",
 						"dependsOn": [],
@@ -1395,8 +1375,8 @@
 						}
 					},
 					{
-						"name": "ITS YOUR FIRST TIME",
-						"type": "IfCondition",
+						"name": "SET PREV DATE",
+						"type": "SetVariable",
 						"dependsOn": [
 							{
 								"activity": "SET TRIGGER DATE",
@@ -1407,25 +1387,11 @@
 						],
 						"userProperties": [],
 						"typeProperties": {
-							"expression": {
-								"value": "@equals(variables('prevDate'), '0')",
+							"variableName": "prevDate",
+							"value": {
+								"value": "@addHours(variables('nowDate'), variables('period_time'))",
 								"type": "Expression"
-							},
-							"ifTrueActivities": [
-								{
-									"name": "Set prev now-cycle_length",
-									"type": "SetVariable",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "prevDate",
-										"value": {
-											"value": "@addHours(variables('nowDate'), mul(int(variables('length_of_cycle')), -1))",
-											"type": "Expression"
-										}
-									}
-								}
-							]
+							}
 						}
 					}
 				],
@@ -1448,6 +1414,10 @@
 					"length_of_cycle": {
 						"type": "String",
 						"defaultValue": "24"
+					},
+					"period_time": {
+						"type": "String",
+						"defaultValue": "1"
 					}
 				},
 				"annotations": []
@@ -3407,7 +3377,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Stopped",
+				"runtimeState": "Started",
 				"pipeline": {
 					"pipelineReference": {
 						"referenceName": "2-upd-in-1-day",
@@ -3420,7 +3390,7 @@
 					"frequency": "Hour",
 					"interval": 1,
 					"startTime": "2020-06-09T19:05:00.000Z",
-					"endTime": "2020-06-10T07:01:00.000Z",
+					"endTime": "2020-06-10T19:01:00.000Z",
 					"delay": "00:00:00",
 					"maxConcurrency": 50,
 					"retryPolicy": {
