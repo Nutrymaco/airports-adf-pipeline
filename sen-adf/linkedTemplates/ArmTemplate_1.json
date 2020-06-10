@@ -13,6 +13,51 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/SetByPipelineNameAndStage')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStore1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"stage": {
+						"type": "string",
+						"defaultValue": "none"
+					},
+					"pipeiineName": {
+						"type": "string",
+						"defaultValue": "pipeline"
+					},
+					"fileName": {
+						"type": "string",
+						"defaultValue": "fileName"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureDataLakeStoreLocation",
+						"fileName": {
+							"value": "@concat(dataset().fileName, '.csv')",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat(dataset().pipeiineName, '/', dataset().stage, '/')",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SetByYearAndMonth')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1423,6 +1468,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/SetByPipelineNameAndStage')]",
 				"[concat(variables('factoryId'), '/datasets/TicketsFlightsTable')]",
 				"[concat(variables('factoryId'), '/datasets/SetByYearAndMonthAndDay')]"
 			]
@@ -3372,31 +3418,30 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/TUMBLERON')]",
+			"name": "[concat(parameters('factoryName'), '/every hour')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
 				"runtimeState": "Started",
-				"pipeline": {
-					"pipelineReference": {
-						"referenceName": "2-upd-in-1-day",
-						"type": "PipelineReference"
-					},
-					"parameters": {}
-				},
-				"type": "TumblingWindowTrigger",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "2-upd-in-1-day",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
 				"typeProperties": {
-					"frequency": "Hour",
-					"interval": 1,
-					"startTime": "2020-06-09T19:05:00.000Z",
-					"endTime": "2020-06-10T19:01:00.000Z",
-					"delay": "00:00:00",
-					"maxConcurrency": 50,
-					"retryPolicy": {
-						"intervalInSeconds": 30
-					},
-					"dependsOn": []
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 1,
+						"startTime": "2020-06-10T06:10:00.000Z",
+						"endTime": "2020-06-11T06:07:00.000Z",
+						"timeZone": "UTC"
+					}
 				}
 			},
 			"dependsOn": [
