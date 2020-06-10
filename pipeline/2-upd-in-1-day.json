@@ -8,7 +8,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "ITS YOUR FIRST TIME",
+						"activity": "SET PREV DATE",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -125,7 +125,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "ITS YOUR FIRST TIME",
+						"activity": "SET PREV DATE",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -222,7 +222,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "ITS YOUR FIRST TIME",
+						"activity": "SET PREV DATE",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -502,7 +502,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "ITS YOUR FIRST TIME",
+						"activity": "SET PREV DATE",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -599,7 +599,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "ITS YOUR FIRST TIME",
+						"activity": "SET PREV DATE",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -1196,8 +1196,8 @@
 				}
 			},
 			{
-				"name": "ITS YOUR FIRST TIME",
-				"type": "IfCondition",
+				"name": "SET PREV DATE",
+				"type": "SetVariable",
 				"dependsOn": [
 					{
 						"activity": "SET TRIGGER DATE",
@@ -1208,25 +1208,11 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
-					"expression": {
-						"value": "@equals(variables('prevDate'), '0')",
+					"variableName": "prevDate",
+					"value": {
+						"value": "@addHours(variables('nowDate'), variables('period_time'))",
 						"type": "Expression"
-					},
-					"ifTrueActivities": [
-						{
-							"name": "Set prev now-cycle_length",
-							"type": "SetVariable",
-							"dependsOn": [],
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "prevDate",
-								"value": {
-									"value": "@addHours(variables('nowDate'), mul(int(variables('length_of_cycle')), -1))",
-									"type": "Expression"
-								}
-							}
-						}
-					]
+					}
 				}
 			}
 		],
@@ -1249,6 +1235,10 @@
 			"length_of_cycle": {
 				"type": "String",
 				"defaultValue": "24"
+			},
+			"period_time": {
+				"type": "String",
+				"defaultValue": "1"
 			}
 		},
 		"annotations": []

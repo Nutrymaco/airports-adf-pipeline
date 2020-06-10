@@ -2,7 +2,7 @@
 	"name": "TUMBLERON",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Stopped",
+		"runtimeState": "Started",
 		"pipeline": {
 			"pipelineReference": {
 				"referenceName": "2-upd-in-1-day",
@@ -14,7 +14,7 @@
 			"frequency": "Hour",
 			"interval": 1,
 			"startTime": "2020-06-09T19:05:00.000Z",
-			"endTime": "2020-06-10T07:01:00.000Z",
+			"endTime": "2020-06-10T19:01:00.000Z",
 			"delay": "00:00:00",
 			"maxConcurrency": 50,
 			"retryPolicy": {
