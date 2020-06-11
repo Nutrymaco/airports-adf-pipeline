@@ -563,7 +563,7 @@
 				}
 			},
 			{
-				"name": "COPY AMOUNT REPORT_copy1",
+				"name": "COPY AMOUNT REPORT",
 				"type": "Copy",
 				"dependsOn": [
 					{
