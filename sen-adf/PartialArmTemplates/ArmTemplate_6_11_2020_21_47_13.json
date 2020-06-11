@@ -6,58 +6,6 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "sen-adf"
-		},
-		"AzureDataLakeAnalytics1_servicePrincipalKey": {
-			"type": "secureString",
-			"metadata": "Secure string for 'servicePrincipalKey' of 'AzureDataLakeAnalytics1'"
-		},
-		"AzurePostgreSql1_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'AzurePostgreSql1'"
-		},
-		"GOSH_PSQL_CONN_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'GOSH_PSQL_CONN'"
-		},
-		"GoshaBD_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'GoshaBD'"
-		},
-		"AzureDataLakeAnalytics1_properties_typeProperties_accountName": {
-			"type": "string",
-			"defaultValue": "sendla"
-		},
-		"AzureDataLakeAnalytics1_properties_typeProperties_servicePrincipalId": {
-			"type": "string",
-			"defaultValue": "15f33613-db8a-4a49-819e-a352da33bbc5"
-		},
-		"AzureDataLakeAnalytics1_properties_typeProperties_tenant": {
-			"type": "string",
-			"defaultValue": "8957652c-8b32-4246-9daa-700cb6f31fc6"
-		},
-		"AzureDataLakeAnalytics1_properties_typeProperties_subscriptionId": {
-			"type": "string",
-			"defaultValue": "a66ba509-6b33-4f11-b3f8-8547f92c3805"
-		},
-		"AzureDataLakeAnalytics1_properties_typeProperties_resourceGroupName": {
-			"type": "string",
-			"defaultValue": "sen-mirea-rg"
-		},
-		"AzureDataLakeStore1_properties_typeProperties_dataLakeStoreUri": {
-			"type": "string",
-			"defaultValue": "https://sendls.azuredatalakestore.net/webhdfs/v1"
-		},
-		"AzureDataLakeStore1_properties_typeProperties_tenant": {
-			"type": "string",
-			"defaultValue": "8957652c-8b32-4246-9daa-700cb6f31fc6"
-		},
-		"AzureDataLakeStore1_properties_typeProperties_subscriptionId": {
-			"type": "string",
-			"defaultValue": "a66ba509-6b33-4f11-b3f8-8547f92c3805"
-		},
-		"AzureDataLakeStore1_properties_typeProperties_resourceGroupName": {
-			"type": "string",
-			"defaultValue": "sen-mirea-rg"
 		}
 	},
 	"variables": {
@@ -170,8 +118,7 @@
 						"inputs": [
 							{
 								"referenceName": "FlightsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -268,8 +215,7 @@
 						"inputs": [
 							{
 								"referenceName": "TicketsFlightsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -383,8 +329,7 @@
 						"inputs": [
 							{
 								"referenceName": "AirportsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -647,8 +592,7 @@
 						"inputs": [
 							{
 								"referenceName": "AnyTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -775,8 +719,7 @@
 						"inputs": [
 							{
 								"referenceName": "AnyTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -980,8 +923,7 @@
 						"outputs": [
 							{
 								"referenceName": "GOSHA_POP_DIR",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -1297,17 +1239,7 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/FlightsTable')]",
-				"[concat(variables('factoryId'), '/datasets/SetByPipelineNameAndStage')]",
-				"[concat(variables('factoryId'), '/datasets/TicketsFlightsTable')]",
-				"[concat(variables('factoryId'), '/datasets/AirportsTable')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeAnalytics1')]",
-				"[concat(variables('factoryId'), '/datasets/SetByYearAndMonthAndDay')]",
-				"[concat(variables('factoryId'), '/datasets/AnyTable')]",
-				"[concat(variables('factoryId'), '/datasets/GOSHA_POP_DIR')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/day-by-day pipeline')]",
@@ -1414,8 +1346,7 @@
 						"inputs": [
 							{
 								"referenceName": "FlightsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -1524,8 +1455,7 @@
 						"inputs": [
 							{
 								"referenceName": "BookingsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -1651,8 +1581,7 @@
 						"inputs": [
 							{
 								"referenceName": "AirportsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -2103,8 +2032,7 @@
 						"outputs": [
 							{
 								"referenceName": "GOSHA_AMOUNTS",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -2263,8 +2191,7 @@
 						"outputs": [
 							{
 								"referenceName": "GOSHA_LATENCY",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -2389,16 +2316,7 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/FlightsTable')]",
-				"[concat(variables('factoryId'), '/datasets/SetByYearAndMonthAndDay')]",
-				"[concat(variables('factoryId'), '/datasets/BookingsTable')]",
-				"[concat(variables('factoryId'), '/datasets/AirportsTable')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeAnalytics1')]",
-				"[concat(variables('factoryId'), '/datasets/GOSHA_AMOUNTS')]",
-				"[concat(variables('factoryId'), '/datasets/GOSHA_LATENCY')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/month-by-month')]",
@@ -2505,8 +2423,7 @@
 						"inputs": [
 							{
 								"referenceName": "FlightsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -2610,8 +2527,7 @@
 						"inputs": [
 							{
 								"referenceName": "AnyTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -2716,8 +2632,7 @@
 						"inputs": [
 							{
 								"referenceName": "BookingsTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -2851,8 +2766,7 @@
 						"inputs": [
 							{
 								"referenceName": "AnyTable",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						],
 						"outputs": [
@@ -3165,8 +3079,7 @@
 						"outputs": [
 							{
 								"referenceName": "GOSHA_BOOKINGS",
-								"type": "DatasetReference",
-								"parameters": {}
+								"type": "DatasetReference"
 							}
 						]
 					},
@@ -3225,557 +3138,6 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/FlightsTable')]",
-				"[concat(variables('factoryId'), '/datasets/SetByYearAndMonth')]",
-				"[concat(variables('factoryId'), '/datasets/AnyTable')]",
-				"[concat(variables('factoryId'), '/datasets/BookingsTable')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeAnalytics1')]",
-				"[concat(variables('factoryId'), '/datasets/GOSHA_BOOKINGS')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "If Condition1",
-						"type": "IfCondition",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@equals(variables('x'), '0')",
-								"type": "Expression"
-							},
-							"ifTrueActivities": [
-								{
-									"name": "Wait1",
-									"type": "Wait",
-									"dependsOn": [],
-									"userProperties": [],
-									"typeProperties": {
-										"waitTimeInSeconds": 1
-									}
-								},
-								{
-									"name": "Set variable1",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "Wait1",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "x",
-										"value": "1"
-									}
-								}
-							]
-						}
-					}
-				],
-				"variables": {
-					"x": {
-						"type": "String",
-						"defaultValue": "1"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AircraftsTable')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzurePostgreSql1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "bookings",
-					"table": "aircrafts"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AirportsTable')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzurePostgreSql1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "bookings",
-					"table": "airports"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AnyTable')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzurePostgreSql1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/BookingsTable')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzurePostgreSql1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "bookings",
-					"table": "bookings"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/FlightsTable')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzurePostgreSql1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "bookings",
-					"table": "flights"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/GOSHA_AIRCRAFT')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "GoshaBD",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Aircraft2"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/GoshaBD')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/GOSHA_AMOUNTS')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "GOSH_PSQL_CONN",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "public",
-					"table": "flight_amount"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/GOSH_PSQL_CONN')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/GOSHA_BOOKINGS')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "GOSH_PSQL_CONN",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "public",
-					"table": "booking"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/GOSH_PSQL_CONN')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/GOSHA_LATENCY')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "GOSH_PSQL_CONN",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "public",
-					"table": "flight_latency"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/GOSH_PSQL_CONN')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/GOSHA_POP_DIR')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "GOSH_PSQL_CONN",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "public",
-					"table": "popular_directions"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/GOSH_PSQL_CONN')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SetByPipelineNameAndStage')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStore1",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"stage": {
-						"type": "string",
-						"defaultValue": "none"
-					},
-					"pipeiineName": {
-						"type": "string",
-						"defaultValue": "pipeline"
-					},
-					"fileName": {
-						"type": "string",
-						"defaultValue": "fileName"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureDataLakeStoreLocation",
-						"fileName": {
-							"value": "@concat(dataset().fileName, '.csv')",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@concat(dataset().pipeiineName, '/', dataset().stage, '/')",
-							"type": "Expression"
-						}
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SetByYearAndMonth')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStore1",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"stage": {
-						"type": "string",
-						"defaultValue": "none"
-					},
-					"month": {
-						"type": "string",
-						"defaultValue": "01"
-					},
-					"year": {
-						"type": "string",
-						"defaultValue": "2020"
-					},
-					"fileName": {
-						"type": "string",
-						"defaultValue": "file"
-					},
-					"pipelineName": {
-						"type": "string",
-						"defaultValue": "pipeline"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureDataLakeStoreLocation",
-						"fileName": {
-							"value": "@concat(dataset().filename, '.csv')",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@concat(dataset().pipelineName, '/', dataset().stage, '/', dataset().year, '/', dataset().month, '/')",
-							"type": "Expression"
-						}
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SetByYearAndMonthAndDay')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureDataLakeStore1",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"stage": {
-						"type": "string",
-						"defaultValue": "none"
-					},
-					"day": {
-						"type": "string",
-						"defaultValue": "01"
-					},
-					"month": {
-						"type": "string",
-						"defaultValue": "01"
-					},
-					"year": {
-						"type": "string",
-						"defaultValue": "2020"
-					},
-					"fileName": {
-						"type": "string",
-						"defaultValue": "fileName"
-					},
-					"pipelineName": {
-						"type": "string",
-						"defaultValue": "pipeline"
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureDataLakeStoreLocation",
-						"fileName": {
-							"value": "@concat(dataset().fileName, '.csv')",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@concat(dataset().pipelineName, '/',dataset().stage, '/', dataset().year, '/', dataset().month, '/', dataset().day, '/')",
-							"type": "Expression"
-						}
-					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStore1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/TicketsFlightsTable')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzurePostgreSql1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "bookings",
-					"table": "ticket_flights"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/TicketsTable')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzurePostgreSql1",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzurePostgreSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "bookings",
-					"table": "tickets"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzurePostgreSql1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureDataLakeAnalytics1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureDataLakeAnalytics",
-				"typeProperties": {
-					"accountName": "[parameters('AzureDataLakeAnalytics1_properties_typeProperties_accountName')]",
-					"servicePrincipalId": "[parameters('AzureDataLakeAnalytics1_properties_typeProperties_servicePrincipalId')]",
-					"servicePrincipalKey": {
-						"type": "SecureString",
-						"value": "[parameters('AzureDataLakeAnalytics1_servicePrincipalKey')]"
-					},
-					"tenant": "[parameters('AzureDataLakeAnalytics1_properties_typeProperties_tenant')]",
-					"subscriptionId": "[parameters('AzureDataLakeAnalytics1_properties_typeProperties_subscriptionId')]",
-					"resourceGroupName": "[parameters('AzureDataLakeAnalytics1_properties_typeProperties_resourceGroupName')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureDataLakeStore1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureDataLakeStore",
-				"typeProperties": {
-					"dataLakeStoreUri": "[parameters('AzureDataLakeStore1_properties_typeProperties_dataLakeStoreUri')]",
-					"tenant": "[parameters('AzureDataLakeStore1_properties_typeProperties_tenant')]",
-					"subscriptionId": "[parameters('AzureDataLakeStore1_properties_typeProperties_subscriptionId')]",
-					"resourceGroupName": "[parameters('AzureDataLakeStore1_properties_typeProperties_resourceGroupName')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzurePostgreSql1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzurePostgreSql",
-				"typeProperties": {
-					"connectionString": "[parameters('AzurePostgreSql1_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/GOSH_PSQL_CONN')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzurePostgreSql",
-				"typeProperties": {
-					"connectionString": "[parameters('GOSH_PSQL_CONN_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/GoshaBD')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('GoshaBD_connectionString')]"
-				}
-			},
 			"dependsOn": []
 		},
 		{
@@ -3790,8 +3152,7 @@
 						"pipelineReference": {
 							"referenceName": "day-by-day pipeline",
 							"type": "PipelineReference"
-						},
-						"parameters": {}
+						}
 					}
 				],
 				"type": "ScheduleTrigger",
@@ -3810,89 +3171,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/TUMBLERON')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"type": "TumblingWindowTrigger",
-				"typeProperties": {
-					"frequency": "Hour",
-					"interval": 1,
-					"startTime": "2020-06-09T19:05:00.000Z",
-					"endTime": "2020-06-10T19:01:00.000Z",
-					"delay": "00:00:00",
-					"maxConcurrency": 50,
-					"retryPolicy": {
-						"intervalInSeconds": 30
-					},
-					"dependsOn": []
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/TUMB_MINUTE')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipeline": {
-					"pipelineReference": {
-						"referenceName": "pipeline1",
-						"type": "PipelineReference"
-					},
-					"parameters": {}
-				},
-				"type": "TumblingWindowTrigger",
-				"typeProperties": {
-					"frequency": "Minute",
-					"interval": 5,
-					"startTime": "2020-06-10T04:35:00.000Z",
-					"delay": "00:00:00",
-					"maxConcurrency": 50,
-					"retryPolicy": {
-						"intervalInSeconds": 30
-					},
-					"dependsOn": []
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pipeline1')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/day half')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2020-06-10T15:03:00.000Z",
-						"endTime": "2020-06-13T15:03:00.000Z",
-						"timeZone": "UTC",
-						"schedule": {
-							"minutes": [
-								0
-							],
-							"hours": [
-								12
-							]
-						}
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/every hour')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -3904,8 +3182,7 @@
 						"pipelineReference": {
 							"referenceName": "2-upd-in-1-day",
 							"type": "PipelineReference"
-						},
-						"parameters": {}
+						}
 					}
 				],
 				"type": "ScheduleTrigger",
@@ -3922,37 +3199,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/2-upd-in-1-day')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/test1')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Hour",
-						"interval": 1,
-						"startTime": "2020-06-09T16:30:00.000Z",
-						"endTime": "2020-06-10T04:25:00.000Z",
-						"timeZone": "UTC"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/integrationRuntime1')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "SelfHosted",
-				"typeProperties": {}
-			},
-			"dependsOn": []
 		}
 	]
 }

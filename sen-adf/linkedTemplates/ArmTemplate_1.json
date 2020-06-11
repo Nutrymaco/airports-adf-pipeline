@@ -1287,7 +1287,14 @@
 								{
 									"name": "UNION FULL AND PART",
 									"type": "DataLakeAnalyticsU-SQL",
-									"dependsOn": [],
+									"dependsOn": [
+										{
+											"activity": "CLEAR FULL FROM OLD",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
 									"policy": {
 										"timeout": "7.00:00:00",
 										"retry": 0,
@@ -1317,14 +1324,7 @@
 								{
 									"name": "CLEAR FULL FROM OLD",
 									"type": "DataLakeAnalyticsU-SQL",
-									"dependsOn": [
-										{
-											"activity": "UNION FULL AND PART",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
+									"dependsOn": [],
 									"policy": {
 										"timeout": "7.00:00:00",
 										"retry": 0,
@@ -2043,7 +2043,7 @@
 						}
 					},
 					{
-						"name": "COPY AMOUNT REPORT_copy1",
+						"name": "COPY AMOUNT REPORT",
 						"type": "Copy",
 						"dependsOn": [
 							{
@@ -2532,7 +2532,7 @@
 				"variables": {
 					"day": {
 						"type": "String",
-						"defaultValue": "14"
+						"defaultValue": "10"
 					},
 					"month": {
 						"type": "String",
@@ -3365,7 +3365,7 @@
 				"variables": {
 					"month": {
 						"type": "String",
-						"defaultValue": "10"
+						"defaultValue": "07"
 					},
 					"year": {
 						"type": "String",
@@ -3392,7 +3392,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Started",
+				"runtimeState": "Stopped",
 				"pipelines": [
 					{
 						"pipelineReference": {
@@ -3423,7 +3423,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Started",
+				"runtimeState": "Stopped",
 				"pipelines": [
 					{
 						"pipelineReference": {
