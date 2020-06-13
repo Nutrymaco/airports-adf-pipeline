@@ -1191,9 +1191,6 @@
 					}
 				],
 				"variables": {
-					"set_actual": {
-						"type": "Boolean"
-					},
 					"pipelineName": {
 						"type": "String",
 						"defaultValue": "popular_directions"
