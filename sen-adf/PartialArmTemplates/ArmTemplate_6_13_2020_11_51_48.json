@@ -1,0 +1,1165 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "sen-adf"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/2-upd-in-1-day')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "most popular directions in 24 hours updated 2 times in 24 hours",
+				"activities": [
+					{
+						"name": "copy flights",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "SET PREV DATE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 4,
+							"retryIntervalInSeconds": 45,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": {
+									"value": "select distinct\n    f.flight_id, scheduled_departure, scheduled_arrival, f.departure_airport, f.arrival_airport\nfrom bookings.flights f\n",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 2,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "flight_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 1
+										}
+									},
+									{
+										"source": {
+											"name": "scheduled_departure",
+											"type": "DateTime"
+										},
+										"sink": {
+											"type": "DateTime",
+											"ordinal": 2
+										}
+									},
+									{
+										"source": {
+											"name": "scheduled_arrival",
+											"type": "DateTime"
+										},
+										"sink": {
+											"type": "DateTime",
+											"ordinal": 3
+										}
+									},
+									{
+										"source": {
+											"name": "departure_airport",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 4
+										}
+									},
+									{
+										"source": {
+											"name": "arrival_airport",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 5
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "FlightsTable",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SetByPipelineNameAndStage",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "raw",
+									"pipeiineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									},
+									"fileName": "flights"
+								}
+							}
+						]
+					},
+					{
+						"name": "copy ticket_flights",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "SET PREV DATE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 4,
+							"retryIntervalInSeconds": 40,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": {
+									"value": "select\n      tf.ticket_no, tf.flight_id, tf.amount \nfrom bookings.ticket_flights tf\n",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 2,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ticket_no",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 1
+										}
+									},
+									{
+										"source": {
+											"name": "flight_id",
+											"type": "Int32"
+										},
+										"sink": {
+											"type": "Int32",
+											"ordinal": 2
+										}
+									},
+									{
+										"source": {
+											"name": "amount",
+											"type": "Decimal"
+										},
+										"sink": {
+											"type": "Decimal",
+											"ordinal": 3
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "TicketsFlightsTable",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SetByPipelineNameAndStage",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "raw",
+									"pipeiineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									},
+									"fileName": "ticket_flights"
+								}
+							}
+						]
+					},
+					{
+						"name": "copy airports",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "SET PREV DATE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": "SELECT \n  airport_code, \n  airport_name,\n  city, \n  longitude AS x, \n  latitude AS y\nFROM bookings.airports\n  "
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 2,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "airport_code",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 1
+										}
+									},
+									{
+										"source": {
+											"name": "airport_name",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 2
+										}
+									},
+									{
+										"source": {
+											"name": "city",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 3
+										}
+									},
+									{
+										"source": {
+											"name": "x",
+											"type": "Double"
+										},
+										"sink": {
+											"type": "Decimal",
+											"ordinal": 4
+										}
+									},
+									{
+										"source": {
+											"name": "y",
+											"type": "Double"
+										},
+										"sink": {
+											"type": "Decimal",
+											"ordinal": 5
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AirportsTable",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SetByPipelineNameAndStage",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "raw",
+									"pipeiineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									},
+									"fileName": "airports"
+								}
+							}
+						]
+					},
+					{
+						"name": "CREATE JOIN BY PART OF DAY",
+						"type": "DataLakeAnalyticsU-SQL",
+						"dependsOn": [
+							{
+								"activity": "Wait1",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"scriptPath": "scripts/join_2_in_1_pipeline.usql",
+							"scriptLinkedService": {
+								"referenceName": "AzureDataLakeStore1",
+								"type": "LinkedServiceReference"
+							},
+							"parameters": {
+								"pipelineName": {
+									"value": "@variables('pipelineName')",
+									"type": "Expression"
+								},
+								"nowDate": {
+									"value": "@variables('nowDate')",
+									"type": "Expression"
+								},
+								"prevDate": {
+									"value": "@variables('prevDate')",
+									"type": "Expression"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDataLakeAnalytics1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "CREATE NEW REPORT",
+						"type": "DataLakeAnalyticsU-SQL",
+						"dependsOn": [
+							{
+								"activity": "COPY CURRENT PART TO RECYCLE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"scriptPath": "scripts/popular_directions_report.usql",
+							"scriptLinkedService": {
+								"referenceName": "AzureDataLakeStore1",
+								"type": "LinkedServiceReference"
+							},
+							"parameters": {
+								"pipelineName": {
+									"value": "@variables('pipelineName')",
+									"type": "Expression"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "AzureDataLakeAnalytics1",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "Copy bookings",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "SET PREV DATE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 4,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": {
+									"value": "select\n       b.book_ref, book_date, total_amount\nfrom bookings.bookings b\n",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 2,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "book_ref",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 1
+										}
+									},
+									{
+										"source": {
+											"name": "book_date",
+											"type": "DateTime"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 2
+										}
+									},
+									{
+										"source": {
+											"name": "total_amount",
+											"type": "Decimal"
+										},
+										"sink": {
+											"type": "Decimal",
+											"ordinal": 3
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AnyTable",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SetByPipelineNameAndStage",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "raw",
+									"pipeiineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									},
+									"fileName": "bookings"
+								}
+							}
+						]
+					},
+					{
+						"name": "Copy tickets",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "SET PREV DATE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 10,
+							"retryIntervalInSeconds": 55,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzurePostgreSqlSource",
+								"query": {
+									"value": "select\n    t.ticket_no, t.book_ref, t.passenger_id, t.passenger_name,\n   t.contact_data->>'phone' as phone, t.contact_data->>'email' as email\nfrom bookings.tickets t",
+									"type": "Expression"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"dataIntegrationUnits": 2,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"name": "ticket_no",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 1
+										}
+									},
+									{
+										"source": {
+											"name": "book_ref",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 2
+										}
+									},
+									{
+										"source": {
+											"name": "passenger_id",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 3
+										}
+									},
+									{
+										"source": {
+											"name": "passenger_name",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 4
+										}
+									},
+									{
+										"source": {
+											"name": "phone",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 5
+										}
+									},
+									{
+										"source": {
+											"name": "email",
+											"type": "String"
+										},
+										"sink": {
+											"type": "String",
+											"ordinal": 6
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "AnyTable",
+								"type": "DatasetReference"
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SetByPipelineNameAndStage",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "raw",
+									"pipeiineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									},
+									"fileName": "tickets"
+								}
+							}
+						]
+					},
+					{
+						"name": "COPY CURRENT PART TO RECYCLE",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "FULL EXISTS",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureDataLakeStoreWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "SetByPipelineNameAndStage",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "process",
+									"pipeiineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									},
+									"fileName": "joined_full_flights_tickets_airports_bookings"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SetByYearMonthDayHour",
+								"type": "DatasetReference",
+								"parameters": {
+									"pipelineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									},
+									"year": {
+										"value": "@formatDateTime(variables('prevDate'), 'yyyy')",
+										"type": "Expression"
+									},
+									"month": {
+										"value": "@formatDateTime(variables('prevDate'), 'MM')",
+										"type": "Expression"
+									},
+									"day": {
+										"value": "@formatDateTime(variables('prevDate'), 'dd')",
+										"type": "Expression"
+									},
+									"hour": {
+										"value": "@formatDateTime(variables('prevDate'), 'hh')",
+										"type": "Expression"
+									},
+									"stage": "process",
+									"fileName": "joined_full_flights_tickets_airports_bookings"
+								}
+							}
+						]
+					},
+					{
+						"name": "COPY TO GOSHA_DB",
+						"type": "Copy",
+						"dependsOn": [
+							{
+								"activity": "CREATE NEW REPORT",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"additionalColumns": [
+									{
+										"name": "agg_date",
+										"value": {
+											"value": "@{utcnow()}",
+											"type": "Expression"
+										}
+									}
+								],
+								"storeSettings": {
+									"type": "AzureDataLakeStoreReadSettings",
+									"recursive": true
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzurePostgreSQLSink",
+								"writeBatchSize": 10000,
+								"writeBatchTimeout": "00:00:30",
+								"preCopyScript": {
+									"value": "delete from popular_directions",
+									"type": "Expression"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 1
+										},
+										"sink": {
+											"name": "city",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"type": "String",
+											"ordinal": 2
+										},
+										"sink": {
+											"name": "count_of_flights",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"name": "agg_date",
+											"type": "String"
+										},
+										"sink": {
+											"name": "agg_date",
+											"type": "DateTime"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "SetByPipelineNameAndStage",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "output",
+									"pipeiineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									},
+									"fileName": "popular_directions"
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "GOSHA_POP_DIR",
+								"type": "DatasetReference"
+							}
+						]
+					},
+					{
+						"name": "CHECK FULL",
+						"type": "GetMetadata",
+						"dependsOn": [
+							{
+								"activity": "CREATE JOIN BY PART OF DAY",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "SetByPipelineNameAndStage",
+								"type": "DatasetReference",
+								"parameters": {
+									"stage": "process",
+									"pipeiineName": {
+										"value": "@variables('pipelineName')",
+										"type": "Expression"
+									},
+									"fileName": "joined_full_flights_tickets_airports_bookings"
+								}
+							},
+							"fieldList": [
+								"exists"
+							],
+							"storeSettings": {
+								"type": "AzureDataLakeStoreReadSettings",
+								"recursive": true
+							},
+							"formatSettings": {
+								"type": "DelimitedTextReadSettings"
+							}
+						}
+					},
+					{
+						"name": "FULL EXISTS",
+						"type": "IfCondition",
+						"dependsOn": [
+							{
+								"activity": "CHECK FULL",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@activity('CHECK FULL').output.exists",
+								"type": "Expression"
+							},
+							"ifFalseActivities": [
+								{
+									"name": "WRITE PART TO FULL",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureDataLakeStoreReadSettings",
+												"recursive": true
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureDataLakeStoreWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "SetByPipelineNameAndStage",
+											"type": "DatasetReference",
+											"parameters": {
+												"stage": "process",
+												"pipeiineName": {
+													"value": "@variables('pipelineName')",
+													"type": "Expression"
+												},
+												"fileName": "joined_part_flights_tickets_airports_bookings"
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "SetByPipelineNameAndStage",
+											"type": "DatasetReference",
+											"parameters": {
+												"stage": "process",
+												"pipeiineName": {
+													"value": "@variables('pipelineName')",
+													"type": "Expression"
+												},
+												"fileName": "joined_full_flights_tickets_airports_bookings"
+											}
+										}
+									]
+								}
+							],
+							"ifTrueActivities": [
+								{
+									"name": "UNION FULL AND PART",
+									"type": "DataLakeAnalyticsU-SQL",
+									"dependsOn": [
+										{
+											"activity": "CLEAR FULL FROM OLD",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"scriptPath": "scripts/popular_directions_union.usql",
+										"scriptLinkedService": {
+											"referenceName": "AzureDataLakeStore1",
+											"type": "LinkedServiceReference"
+										},
+										"parameters": {
+											"pipelineName": {
+												"value": "@variables('pipelineName')",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AzureDataLakeAnalytics1",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "CLEAR FULL FROM OLD",
+									"type": "DataLakeAnalyticsU-SQL",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"scriptPath": "scripts/2_in_1_clear_from_old.usql",
+										"scriptLinkedService": {
+											"referenceName": "AzureDataLakeStore1",
+											"type": "LinkedServiceReference"
+										},
+										"parameters": {
+											"pipelineName": {
+												"value": "@variables('pipelineName')",
+												"type": "Expression"
+											},
+											"nowDate": {
+												"value": "@variables('nowDate')",
+												"type": "Expression"
+											},
+											"prevDate": {
+												"value": "@variables('prevDate')",
+												"type": "Expression"
+											},
+											"length_of_cycle": {
+												"value": "@variables('length_of_cycle')",
+												"type": "Expression"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "AzureDataLakeAnalytics1",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [
+							{
+								"activity": "copy flights",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "copy ticket_flights",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "copy airports",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Copy bookings",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "Copy tickets",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 1
+						}
+					},
+					{
+						"name": "SET TRIGGER DATE",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "nowDate",
+							"value": {
+								"value": "@utcnow()",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "SET PREV DATE",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "SET TRIGGER DATE",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "prevDate",
+							"value": {
+								"value": "@addHours(variables('nowDate'), mul(-1, int(variables('period_time'))))",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"variables": {
+					"set_actual": {
+						"type": "Boolean"
+					},
+					"pipelineName": {
+						"type": "String",
+						"defaultValue": "popular_directions"
+					},
+					"nowDate": {
+						"type": "String",
+						"defaultValue": "2020-01-01 01:00:00"
+					},
+					"prevDate": {
+						"type": "String",
+						"defaultValue": "0"
+					},
+					"length_of_cycle": {
+						"type": "String",
+						"defaultValue": "24"
+					},
+					"period_time": {
+						"type": "String",
+						"defaultValue": "1"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		}
+	]
+}
