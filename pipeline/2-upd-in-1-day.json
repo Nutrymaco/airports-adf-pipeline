@@ -377,95 +377,11 @@
 				}
 			},
 			{
-				"name": "COPY CURRENT REPORT TO RECYCLE",
-				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "CREATE NEW REPORT",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "7.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "DelimitedTextSource",
-						"storeSettings": {
-							"type": "AzureDataLakeStoreReadSettings",
-							"recursive": true
-						},
-						"formatSettings": {
-							"type": "DelimitedTextReadSettings"
-						}
-					},
-					"sink": {
-						"type": "DelimitedTextSink",
-						"storeSettings": {
-							"type": "AzureDataLakeStoreWriteSettings"
-						},
-						"formatSettings": {
-							"type": "DelimitedTextWriteSettings",
-							"quoteAllText": true,
-							"fileExtension": ".txt"
-						}
-					},
-					"enableStaging": false
-				},
-				"inputs": [
-					{
-						"referenceName": "SetByPipelineNameAndStage",
-						"type": "DatasetReference",
-						"parameters": {
-							"stage": "output",
-							"pipeiineName": {
-								"value": "@variables('pipelineName')",
-								"type": "Expression"
-							},
-							"fileName": "popular_directions"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "SetByYearAndMonthAndDay",
-						"type": "DatasetReference",
-						"parameters": {
-							"stage": "output/recycle",
-							"day": {
-								"value": "@formatDateTime(variables('nowDate'), 'dd')",
-								"type": "Expression"
-							},
-							"month": {
-								"value": "@formatDateTime(variables('nowDate'), 'MM')",
-								"type": "Expression"
-							},
-							"year": {
-								"value": "@formatDateTime(variables('nowDate'), 'yyyy')",
-								"type": "Expression"
-							},
-							"fileName": "joined_full_flights_tickets_airports_bookings",
-							"pipelineName": {
-								"value": "@variables('pipelineName')",
-								"type": "Expression"
-							}
-						}
-					}
-				]
-			},
-			{
 				"name": "CREATE NEW REPORT",
 				"type": "DataLakeAnalyticsU-SQL",
 				"dependsOn": [
 					{
-						"activity": "COPY CURRENT PROCESS TO RECYCLE",
+						"activity": "COPY CURRENT PART TO RECYCLE",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -722,7 +638,7 @@
 				]
 			},
 			{
-				"name": "COPY CURRENT PROCESS TO RECYCLE",
+				"name": "COPY CURRENT PART TO RECYCLE",
 				"type": "Copy",
 				"dependsOn": [
 					{
@@ -780,27 +696,31 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "SetByYearAndMonthAndDay",
+						"referenceName": "SetByYearMonthDayHour",
 						"type": "DatasetReference",
 						"parameters": {
-							"stage": "process/recycle",
-							"day": {
-								"value": "@formatDateTime(variables('nowDate'), 'dd')",
-								"type": "Expression"
-							},
-							"month": {
-								"value": "@formatDateTime(variables('nowDate'), 'MM')",
-								"type": "Expression"
-							},
-							"year": {
-								"value": "@formatDateTime(variables('nowDate'), 'yyyy')",
-								"type": "Expression"
-							},
-							"fileName": "joined_full_flights_tickets_airports_bookings",
 							"pipelineName": {
 								"value": "@variables('pipelineName')",
 								"type": "Expression"
-							}
+							},
+							"year": {
+								"value": "@formatDateTime(variables('prevDate'), 'year')",
+								"type": "Expression"
+							},
+							"month": {
+								"value": "@formatDateTime(variables('prevDate'), 'month')",
+								"type": "Expression"
+							},
+							"day": {
+								"value": "@formatDateTime(variables('prevDate'), 'day')",
+								"type": "Expression"
+							},
+							"hour": {
+								"value": "@formatDateTime(variables('prevDate'), 'hh')",
+								"type": "Expression"
+							},
+							"stage": "process",
+							"fileName": "joined_full_flights_tickets_airports_bookings"
 						}
 					}
 				]
