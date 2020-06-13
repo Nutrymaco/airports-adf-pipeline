@@ -168,6 +168,67 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/SetByYearMonthDayHour')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureDataLakeStore1",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"pipelineName": {
+						"type": "string",
+						"defaultValue": "pipeline"
+					},
+					"year": {
+						"type": "string",
+						"defaultValue": "2020"
+					},
+					"month": {
+						"type": "string",
+						"defaultValue": "01"
+					},
+					"day": {
+						"type": "string",
+						"defaultValue": "01"
+					},
+					"hour": {
+						"type": "string",
+						"defaultValue": "01"
+					},
+					"stage": {
+						"type": "string",
+						"defaultValue": "none"
+					},
+					"fileName": {
+						"type": "string",
+						"defaultValue": "fileName"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureDataLakeStoreLocation",
+						"fileName": {
+							"value": "@concat(dataset().fileName, '.csv')",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat(dataset().pipelineName, '/',dataset().stage, '/', dataset().year, '/', dataset().month, '/', dataset().day, '/', dataset().hour, '/')",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/TicketsFlightsTable')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -618,95 +679,11 @@
 						}
 					},
 					{
-						"name": "COPY CURRENT REPORT TO RECYCLE",
-						"type": "Copy",
-						"dependsOn": [
-							{
-								"activity": "CREATE NEW REPORT",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "DelimitedTextSource",
-								"storeSettings": {
-									"type": "AzureDataLakeStoreReadSettings",
-									"recursive": true
-								},
-								"formatSettings": {
-									"type": "DelimitedTextReadSettings"
-								}
-							},
-							"sink": {
-								"type": "DelimitedTextSink",
-								"storeSettings": {
-									"type": "AzureDataLakeStoreWriteSettings"
-								},
-								"formatSettings": {
-									"type": "DelimitedTextWriteSettings",
-									"quoteAllText": true,
-									"fileExtension": ".txt"
-								}
-							},
-							"enableStaging": false
-						},
-						"inputs": [
-							{
-								"referenceName": "SetByPipelineNameAndStage",
-								"type": "DatasetReference",
-								"parameters": {
-									"stage": "output",
-									"pipeiineName": {
-										"value": "@variables('pipelineName')",
-										"type": "Expression"
-									},
-									"fileName": "popular_directions"
-								}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "SetByYearAndMonthAndDay",
-								"type": "DatasetReference",
-								"parameters": {
-									"stage": "output/recycle",
-									"day": {
-										"value": "@formatDateTime(variables('nowDate'), 'dd')",
-										"type": "Expression"
-									},
-									"month": {
-										"value": "@formatDateTime(variables('nowDate'), 'MM')",
-										"type": "Expression"
-									},
-									"year": {
-										"value": "@formatDateTime(variables('nowDate'), 'yyyy')",
-										"type": "Expression"
-									},
-									"fileName": "joined_full_flights_tickets_airports_bookings",
-									"pipelineName": {
-										"value": "@variables('pipelineName')",
-										"type": "Expression"
-									}
-								}
-							}
-						]
-					},
-					{
 						"name": "CREATE NEW REPORT",
 						"type": "DataLakeAnalyticsU-SQL",
 						"dependsOn": [
 							{
-								"activity": "COPY CURRENT PROCESS TO RECYCLE",
+								"activity": "COPY CURRENT PART TO RECYCLE",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -965,7 +942,7 @@
 						]
 					},
 					{
-						"name": "COPY CURRENT PROCESS TO RECYCLE",
+						"name": "COPY CURRENT PART TO RECYCLE",
 						"type": "Copy",
 						"dependsOn": [
 							{
@@ -1023,27 +1000,31 @@
 						],
 						"outputs": [
 							{
-								"referenceName": "SetByYearAndMonthAndDay",
+								"referenceName": "SetByYearMonthDayHour",
 								"type": "DatasetReference",
 								"parameters": {
-									"stage": "process/recycle",
-									"day": {
-										"value": "@formatDateTime(variables('nowDate'), 'dd')",
-										"type": "Expression"
-									},
-									"month": {
-										"value": "@formatDateTime(variables('nowDate'), 'MM')",
-										"type": "Expression"
-									},
-									"year": {
-										"value": "@formatDateTime(variables('nowDate'), 'yyyy')",
-										"type": "Expression"
-									},
-									"fileName": "joined_full_flights_tickets_airports_bookings",
 									"pipelineName": {
 										"value": "@variables('pipelineName')",
 										"type": "Expression"
-									}
+									},
+									"year": {
+										"value": "@formatDateTime(variables('prevDate'), 'year')",
+										"type": "Expression"
+									},
+									"month": {
+										"value": "@formatDateTime(variables('prevDate'), 'month')",
+										"type": "Expression"
+									},
+									"day": {
+										"value": "@formatDateTime(variables('prevDate'), 'day')",
+										"type": "Expression"
+									},
+									"hour": {
+										"value": "@formatDateTime(variables('prevDate'), 'hh')",
+										"type": "Expression"
+									},
+									"stage": "process",
+									"fileName": "joined_full_flights_tickets_airports_bookings"
 								}
 							}
 						]
@@ -1470,7 +1451,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/SetByPipelineNameAndStage')]",
 				"[concat(variables('factoryId'), '/datasets/TicketsFlightsTable')]",
-				"[concat(variables('factoryId'), '/datasets/SetByYearAndMonthAndDay')]"
+				"[concat(variables('factoryId'), '/datasets/SetByYearMonthDayHour')]"
 			]
 		},
 		{
@@ -2532,19 +2513,18 @@
 				"variables": {
 					"day": {
 						"type": "String",
-						"defaultValue": "10"
+						"defaultValue": "03"
 					},
 					"month": {
 						"type": "String",
-						"defaultValue": "06"
+						"defaultValue": "05"
 					},
 					"year": {
 						"type": "String",
 						"defaultValue": "2020"
 					},
 					"actual": {
-						"type": "Boolean",
-						"defaultValue": true
+						"type": "Boolean"
 					},
 					"pipelineName": {
 						"type": "String",
@@ -3423,7 +3403,7 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Stopped",
+				"runtimeState": "Started",
 				"pipelines": [
 					{
 						"pipelineReference": {
@@ -3438,8 +3418,8 @@
 					"recurrence": {
 						"frequency": "Hour",
 						"interval": 1,
-						"startTime": "2020-06-10T06:10:00.000Z",
-						"endTime": "2020-06-11T06:07:00.000Z",
+						"startTime": "2020-06-13T06:40:00.000Z",
+						"endTime": "2020-06-14T06:07:00.000Z",
 						"timeZone": "UTC"
 					}
 				}
