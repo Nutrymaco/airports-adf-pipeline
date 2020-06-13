@@ -1050,7 +1050,7 @@
 		"variables": {
 			"day": {
 				"type": "String",
-				"defaultValue": "02"
+				"defaultValue": "03"
 			},
 			"month": {
 				"type": "String",
