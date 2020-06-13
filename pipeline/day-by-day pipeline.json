@@ -1050,11 +1050,11 @@
 		"variables": {
 			"day": {
 				"type": "String",
-				"defaultValue": "10"
+				"defaultValue": "1"
 			},
 			"month": {
 				"type": "String",
-				"defaultValue": "06"
+				"defaultValue": "07"
 			},
 			"year": {
 				"type": "String",
@@ -1062,7 +1062,7 @@
 			},
 			"actual": {
 				"type": "Boolean",
-				"defaultValue": true
+				"defaultValue": false
 			},
 			"pipelineName": {
 				"type": "String",
