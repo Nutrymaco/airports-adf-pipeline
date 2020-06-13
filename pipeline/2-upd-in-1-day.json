@@ -1135,7 +1135,7 @@
 			},
 			"period_time": {
 				"type": "String",
-				"defaultValue": "12"
+				"defaultValue": "24"
 			}
 		},
 		"annotations": []
