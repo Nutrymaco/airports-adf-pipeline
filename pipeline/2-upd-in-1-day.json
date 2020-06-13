@@ -426,8 +426,8 @@
 				],
 				"policy": {
 					"timeout": "7.00:00:00",
-					"retry": 8,
-					"retryIntervalInSeconds": 55,
+					"retry": 4,
+					"retryIntervalInSeconds": 30,
 					"secureOutput": false,
 					"secureInput": false
 				},
@@ -704,19 +704,19 @@
 								"type": "Expression"
 							},
 							"year": {
-								"value": "@formatDateTime(variables('nowDate'), 'yyyy')",
+								"value": "@formatDateTime(variables('prevDate'), 'yyyy')",
 								"type": "Expression"
 							},
 							"month": {
-								"value": "@formatDateTime(variables('nowDate'), 'MM')",
+								"value": "@formatDateTime(variables('prevDate'), 'MM')",
 								"type": "Expression"
 							},
 							"day": {
-								"value": "@formatDateTime(variables('nowDate'), 'dd')",
+								"value": "@formatDateTime(variables('prevDate'), 'dd')",
 								"type": "Expression"
 							},
 							"hour": {
-								"value": "@formatDateTime(variables('nowDate'), 'hh')",
+								"value": "@formatDateTime(variables('prevDate'), 'hh')",
 								"type": "Expression"
 							},
 							"stage": "process",
