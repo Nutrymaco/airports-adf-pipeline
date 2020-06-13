@@ -1,0 +1,58 @@
+{
+	"name": "SetByYearMonthDayHour",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStore1",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"pipelineName": {
+				"type": "string",
+				"defaultValue": "pipeline"
+			},
+			"year": {
+				"type": "string",
+				"defaultValue": "2020"
+			},
+			"month": {
+				"type": "string",
+				"defaultValue": "01"
+			},
+			"day": {
+				"type": "string",
+				"defaultValue": "01"
+			},
+			"hour": {
+				"type": "string",
+				"defaultValue": "01"
+			},
+			"stage": {
+				"type": "string",
+				"defaultValue": "none"
+			},
+			"fileName": {
+				"type": "string",
+				"defaultValue": "fileName"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureDataLakeStoreLocation",
+				"fileName": {
+					"value": "@concat(dataset().fileName, '.csv')",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@concat(dataset().pipelineName, '/',dataset().stage, '/', dataset().year, '/', dataset().month, '/', dataset().day, '/', dataset().hour, '/')",
+					"type": "Expression"
+				}
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
