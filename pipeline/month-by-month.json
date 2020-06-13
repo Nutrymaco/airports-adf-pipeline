@@ -799,7 +799,7 @@
 		"variables": {
 			"month": {
 				"type": "String",
-				"defaultValue": "05"
+				"defaultValue": "03"
 			},
 			"year": {
 				"type": "String",
