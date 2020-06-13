@@ -704,19 +704,19 @@
 								"type": "Expression"
 							},
 							"year": {
-								"value": "@formatDateTime(variables('prevDate'), 'yyyy')",
+								"value": "@formatDateTime(variables('nowDate'), 'yyyy')",
 								"type": "Expression"
 							},
 							"month": {
-								"value": "@formatDateTime(variables('prevDate'), 'MM')",
+								"value": "@formatDateTime(variables('nowDate'), 'MM')",
 								"type": "Expression"
 							},
 							"day": {
-								"value": "@formatDateTime(variables('prevDate'), 'dd')",
+								"value": "@formatDateTime(variables('nowDate'), 'dd')",
 								"type": "Expression"
 							},
 							"hour": {
-								"value": "@formatDateTime(variables('prevDate'), 'hh')",
+								"value": "@formatDateTime(variables('nowDate'), 'hh')",
 								"type": "Expression"
 							},
 							"stage": "process",
@@ -1135,7 +1135,7 @@
 			},
 			"period_time": {
 				"type": "String",
-				"defaultValue": "24"
+				"defaultValue": "12"
 			}
 		},
 		"annotations": []
