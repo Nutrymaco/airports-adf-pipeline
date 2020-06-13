@@ -704,15 +704,15 @@
 								"type": "Expression"
 							},
 							"year": {
-								"value": "@formatDateTime(variables('prevDate'), 'year')",
+								"value": "@formatDateTime(variables('prevDate'), 'yyyy')",
 								"type": "Expression"
 							},
 							"month": {
-								"value": "@formatDateTime(variables('prevDate'), 'month')",
+								"value": "@formatDateTime(variables('prevDate'), 'MM')",
 								"type": "Expression"
 							},
 							"day": {
-								"value": "@formatDateTime(variables('prevDate'), 'day')",
+								"value": "@formatDateTime(variables('prevDate'), 'dd')",
 								"type": "Expression"
 							},
 							"hour": {
