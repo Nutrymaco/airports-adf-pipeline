@@ -799,7 +799,7 @@
 		"variables": {
 			"month": {
 				"type": "String",
-				"defaultValue": "07"
+				"defaultValue": "04"
 			},
 			"year": {
 				"type": "String",
@@ -807,7 +807,7 @@
 			},
 			"actual": {
 				"type": "Boolean",
-				"defaultValue": true
+				"defaultValue": false
 			},
 			"pipelineName": {
 				"type": "String",
