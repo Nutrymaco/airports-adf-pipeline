@@ -6,7 +6,7 @@
 		"pipelines": [
 			{
 				"pipelineReference": {
-					"referenceName": "2-upd-in-1-day",
+					"referenceName": "24-upd-in-1-day",
 					"type": "PipelineReference"
 				}
 			}

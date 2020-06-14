@@ -1,5 +1,5 @@
 {
-	"name": "2-upd-in-1-day",
+	"name": "24-upd-in-1-day",
 	"properties": {
 		"description": "most popular directions in 24 hours updated 2 times in 24 hours",
 		"activities": [
@@ -351,7 +351,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"scriptPath": "scripts/join_2_in_1_pipeline.usql",
+					"scriptPath": "",
 					"scriptLinkedService": {
 						"referenceName": "AzureDataLakeStore1",
 						"type": "LinkedServiceReference"
